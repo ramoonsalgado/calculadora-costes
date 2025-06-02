@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Calculadora de Costes con Firebase</title>
+    <link rel="icon" type="image/png" href="logo.png" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+            color: #334155;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, rgba(255, 255, 255, 0.1) 75%),
+                linear-gradient(-45deg, transparent 75%, rgba(255, 255, 255, 0.1) 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            opacity: 0.1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+            border-color: #3b82f6;
+        }
+
+        .form-section h2 {
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .service-selector {
+            display: grid;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .service-item:hover::before {
+            left: 100%;
+        }
+
+        .service-item:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+        }
+
+        .service-item.selected {
+            border-color: #3b82f6;
+            background: linear-gradient(135deg, #eef2ff, #dbeafe);
+        }
+
+        .service-info {
+            flex: 1;
+        }
+
+        .service-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .service-price {
+            color: #059669;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .service-discount {
+            color: #dc2626;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            padding: 2px 8px;
+            background: rgba(220, 38, 38, 0.1);
+            border-radius: 6px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-left: 15px;
+        }
+
+        .quantity-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .quantity-btn:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .quantity-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .quantity-input {
+            width: 50px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .quantity-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .summary-section {
+            background: rgba(240, 249, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid #0ea5e9;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(14, 165, 233, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .summary-section::before {
+            content: none;
+        }
+
+        .summary-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(14, 165, 233, 0.15);
+        }
+
+        .summary-item {
+            /* Quitamos border-bottom para que no choque con el siguiente */
+            border-bottom: none;
+            padding: 12px 0;
+            display: flex;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .summary-item:not(:last-child) {
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        .summary-item:hover {
+            padding-left: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.3rem;
+            color: #059669;
+            margin-top: 15px;
+            padding: 20px 25px;
+            border-top: none;
+            /* quitamos border-top para que no curve */
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            border-radius: 0 0 16px 16px;
+            /* bordes redondeados solo abajo */
+        }
+
+        .cart-section {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .cart-table:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .cart-table th {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .cart-table th::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+        }
+
+        .cart-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+        }
+
+        .cart-table tr:hover {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            transform: scale(1.01);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
+            color: white;
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #4b5563, #374151);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            margin-bottom: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .remove-btn {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+        }
+
+        .remove-btn:hover {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
+        #contenedorOfertas {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .oferta {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: white;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .oferta::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .oferta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+        }
+
+        .oferta h3 {
+            color: #1e293b;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .oferta p {
+            margin-bottom: 5px;
+            color: #334155;
+        }
+
+        .estado {
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-top: 8px;
+            color: white;
+            width: fit-content;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .estado:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+        }
+
+        .estado-aprobado {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .estado-pendiente {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1e293b;
+        }
+
+        .estado-rechazado {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        /* Animaciones */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Scrollbar personalizado */
+        .service-selector::-webkit-scrollbar,
+        #contenedorOfertas::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .service-selector::-webkit-scrollbar-track,
+        #contenedorOfertas::-webkit-scrollbar-track {
+            background: rgba(241, 245, 249, 0.5);
+            border-radius: 10px;
+        }
+
+        .service-selector::-webkit-scrollbar-thumb,
+        #contenedorOfertas::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 10px;
+        }
+
+        .service-selector::-webkit-scrollbar-thumb:hover,
+        #contenedorOfertas::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 16px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .main-content {
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .form-section {
+                padding: 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn {
+                justify-content: center;
+            }
+
+            .service-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 15px;
+            }
+
+            .quantity-control {
+                margin-left: 0;
+                justify-content: center;
+            }
+
+            .cart-table {
+                font-size: 0.9rem;
+            }
+
+            .cart-table th,
+            .cart-table td {
+                padding: 10px 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .main-content {
+                padding: 10px;
+            }
+
+            .form-section {
+                padding: 15px;
+            }
+
+            .summary-section {
+                padding: 15px;
+            }
+        }
+
+        /* Estados de carga */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem;
+            color: #64748b;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Estados vacíos */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #64748b;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="logo.png" alt="Logo" style="height: 60px; margin-bottom: 15px;">
+            <h1>🧮 Calculadora de Costes</h1>
+            <p>Crea presupuestos personalizados de forma rápida y eficiente</p>
+        </div>
+
+        <div class="main-content">
+            <div class="form-section">
+                <h2>📋 Información del Proyecto</h2>
+                <div class="form-group">
+                    <label for="nombreCliente">Nombre del Cliente</label>
+                    <input type="text" id="nombreCliente" placeholder="Ingresa el nombre del cliente" />
+                </div>
+                <div class="form-group">
+                    <label for="nombreProyecto">Nombre del Proyecto</label>
+                    <input type="text" id="nombreProyecto" placeholder="Ingresa el nombre del proyecto" />
+                </div>
+                <div class="form-group">
+                    <label for="tipoServicio">Tipo de Servicio</label>
+                    <select id="tipoServicio" onchange="filterServices()">
+                        <option value="">Selecciona un tipo de servicio</option>
+                        <option value="desarrollo">Desarrollo Web</option>
+                        <option value="diseno">Diseño Gráfico</option>
+                        <option value="marketing">Marketing Digital</option>
+                        <option value="consultoria">Consultoría</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="alcanceOpciones">Alcance del Proyecto</label>
+                    <textarea id="alcanceOpciones" placeholder="Describe el alcance del proyecto"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="informacionServicio">Información Adicional</label>
+                    <textarea id="informacionServicio" placeholder="Información adicional sobre el servicio"></textarea>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h2>💰 Resumen de Costes</h2>
+                <div class="summary-item">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">€0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Descuentos:</span>
+                    <span id="descuentos">€0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Total:</span>
+                    <span id="total">€0.00</span>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>🛍️ Catálogo de Servicios</h2>
+                <div id="serviceSelector" class="service-selector">
+                    <!-- Servicios cargados dinámicamente -->
+                </div>
+            </div>
+
+            <div class="cart-section">
+                <h2>🛒 Carrito de Servicios</h2>
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Servicio</th>
+                            <th>Precio Unitario</th>
+                            <th>Cantidad</th>
+                            <th>Descuento</th>
+                            <th>Subtotal</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cartBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: #6b7280; padding: 30px;">
+                                No hay servicios en el carrito
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="form-section" style="grid-column: 1 / -1;">
+                <h2>📂 Ofertas Guardadas</h2>
+                <div id="contenedorOfertas">
+                    <p style="color:#6b7280; text-align:center; padding: 20px;">Cargando ofertas...</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-success" onclick="saveOffer()">💾 Guardar Oferta</button>
+            <button class="btn btn-primary" onclick="generatePDF()">📄 Generar PDF</button>
+            <button class="btn btn-secondary" onclick="clearAll()">🗑️ Limpiar Todo</button>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            serverTimestamp,
+            query,    
+            orderBy,      
+            getDocs
+        } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+        // Configuración Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgFEpvwxe_P5w1JTmrF-IcZ0jWh2j76M4",
+            authDomain: "calculadoracostesfinal.firebaseapp.com",
+            projectId: "calculadoracostesfinal",
+            storageBucket: "calculadoracostesfinal.firebasestorage.app",
+            messagingSenderId: "951863061701",
+            appId: "1:951863061701:web:784ce3733c6b08518d14ac"
+        };
+
+        // Inicializa Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Datos para simular SharePoint
+        const tiposServicio = [
+            { id: 'desarrollo', nombre: 'Desarrollo Web' },
+            { id: 'diseno', nombre: 'Diseño Gráfico' },
+            { id: 'marketing', nombre: 'Marketing Digital' },
+            { id: 'consultoria', nombre: 'Consultoría' }
+        ];
+
+        const productos = [
+            { id: 1, nombre: 'Sitio Web Básico', tipo: 'desarrollo', precio: 800, descuento: 0, activo: true },
+            { id: 2, nombre: 'Sitio Web Avanzado', tipo: 'desarrollo', precio: 1500, descuento: 10, activo: true },
+            { id: 3, nombre: 'E-commerce', tipo: 'desarrollo', precio: 2500, descuento: 15, activo: true },
+            { id: 4, nombre: 'Logo Design', tipo: 'diseno', precio: 300, descuento: 0, activo: true },
+            { id: 5, nombre: 'Identidad Corporativa', tipo: 'diseno', precio: 800, descuento: 5, activo: true },
+            { id: 6, nombre: 'Campaña SEO', tipo: 'marketing', precio: 600, descuento: 0, activo: true },
+            { id: 7, nombre: 'Gestión Redes Sociales', tipo: 'marketing', precio: 400, descuento: 10, activo: true },
+            { id: 8, nombre: 'Consultoría Estratégica', tipo: 'consultoria', precio: 1200, descuento: 0, activo: true },
+            { id: 9, nombre: 'Auditoría Digital', tipo: 'consultoria', precio: 900, descuento: 5, activo: true }
+        ];
+
+        let carrito = [];
+
+        // Funciones expuestas en window para acceso desde HTML
+        window.filterServices = function () {
+            const tipoSeleccionado = document.getElementById('tipoServicio').value;
+            const serviceSelector = document.getElementById('serviceSelector');
+
+            if (!tipoSeleccionado) {
+                serviceSelector.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 20px;">Selecciona un tipo de servicio para ver las opciones disponibles</p>';
+                return;
+            }
+
+            const serviciosFiltrados = productos.filter(p => p.tipo === tipoSeleccionado && p.activo);
+
+            if (serviciosFiltrados.length === 0) {
+                serviceSelector.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 20px;">No hay servicios disponibles para este tipo</p>';
+                return;
+            }
+
+            serviceSelector.innerHTML = serviciosFiltrados.map(servicio => `
+                <div class="service-item" onclick="toggleService(${servicio.id})">
+                    <div class="service-info">
+                        <div class="service-name">${servicio.nombre}</div>
+                        <div class="service-price">
+                            €${servicio.precio.toFixed(2)}
+                            ${servicio.descuento > 0 ? `<span class="service-discount">-${servicio.descuento}%</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="quantity-btn" onclick="event.stopPropagation(); changeQuantity(${servicio.id}, -1)">-</button>
+                        <input type="number" class="quantity-input" value="0" min="0" id="qty-${servicio.id}" onchange="updateQuantity(${servicio.id})" />
+                        <button class="quantity-btn" onclick="event.stopPropagation(); changeQuantity(${servicio.id}, 1)">+</button>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        window.toggleService = function (servicioId) {
+            const qtyInput = document.getElementById(`qty-${servicioId}`);
+            const currentQty = parseInt(qtyInput.value);
+
+            if (currentQty === 0) {
+                qtyInput.value = 1;
+                changeQuantity(servicioId, 1);
+            }
+        };
+
+        window.changeQuantity = function (servicioId, delta) {
+            const qtyInput = document.getElementById(`qty-${servicioId}`);
+            const currentQty = parseInt(qtyInput.value);
+            const newQty = Math.max(0, currentQty + delta);
+
+            qtyInput.value = newQty;
+            updateQuantity(servicioId);
+        };
+
+        window.updateQuantity = function (servicioId) {
+            const qtyInput = document.getElementById(`qty-${servicioId}`);
+            const quantity = parseInt(qtyInput.value) || 0;
+
+            const servicio = productos.find(p => p.id === servicioId);
+            const existingItem = carrito.find(item => item.id === servicioId);
+
+            if (quantity === 0) {
+                carrito = carrito.filter(item => item.id !== servicioId);
+            } else if (existingItem) {
+                existingItem.cantidad = quantity;
+            } else {
+                carrito.push({
+                    id: servicioId,
+                    nombre: servicio.nombre,
+                    precio: servicio.precio,
+                    descuento: servicio.descuento,
+                    cantidad: quantity
+                });
+            }
+
+            updateCart();
+        };
+
+        function updateCart() {
+            const cartBody = document.getElementById('cartBody');
+
+            if (carrito.length === 0) {
+                cartBody.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #6b7280; padding: 30px;">No hay servicios en el carrito</td></tr>';
+            } else {
+                cartBody.innerHTML = carrito.map(item => {
+                    const precioConDescuento = item.precio * (1 - item.descuento / 100);
+                    const subtotal = precioConDescuento * item.cantidad;
+
+                    return `
+                        <tr>
+                            <td>${item.nombre}</td>
+                            <td>€${item.precio.toFixed(2)}</td>
+                            <td>${item.cantidad}</td>
+                            <td>${item.descuento > 0 ? item.descuento + '%' : 'No'}</td>
+                            <td>€${subtotal.toFixed(2)}</td>
+                            <td><button class="remove-btn" onclick="removeFromCart(${item.id})">Eliminar</button></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            updateSummary();
+        }
+
+        window.removeFromCart = function (servicioId) {
+            carrito = carrito.filter(item => item.id !== servicioId);
+            const qtyInput = document.getElementById(`qty-${servicioId}`);
+            if (qtyInput) qtyInput.value = 0;
+            updateCart();
+        };
+
+        function updateSummary() {
+            let subtotal = 0;
+            let totalDescuentos = 0;
+
+            carrito.forEach(item => {
+                const precioOriginal = item.precio * item.cantidad;
+                const descuentoAplicado = precioOriginal * (item.descuento / 100);
+                const precioConDescuento = precioOriginal - descuentoAplicado;
+
+                subtotal += precioOriginal;
+                totalDescuentos += descuentoAplicado;
+            });
+
+            const total = subtotal - totalDescuentos;
+
+            document.getElementById('subtotal').textContent = `€${subtotal.toFixed(2)}`;
+            document.getElementById('descuentos').textContent = `€${totalDescuentos.toFixed(2)}`;
+            document.getElementById('total').textContent = `€${total.toFixed(2)}`;
+        }
+        // Función para mostrar ofertas guardadas
+        async function mostrarOfertas() {
+            const contenedor = document.getElementById("contenedorOfertas");
+            contenedor.innerHTML = '<p style="color:#6b7280; text-align:center; padding: 20px;">Cargando ofertas...</p>';
+            try {
+                const ofertasCol = collection(db, "ofertas");
+                const q = query(ofertasCol, orderBy("creado", "desc"));
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    contenedor.innerHTML = '<p style="color:#6b7280; text-align:center; padding: 20px;">No hay ofertas guardadas aún.</p>';
+                    return;
+                }
+
+                contenedor.innerHTML = "";
+                querySnapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const fecha = data.creado?.toDate?.().toLocaleString() || 'Fecha no disponible';
+
+                    // ponemos clase CSS segun el estado del proyecto
+                    let estadoClass = '';
+                    if (data.estado === 'Aprobado') estadoClass = 'estado-aprobado';
+                    else if (data.estado === 'Pendiente') estadoClass = 'estado-pendiente';
+                    else if (data.estado === 'Rechazado') estadoClass = 'estado-rechazado';
+
+                    const ofertaHTML = `
+                <div class="oferta">
+                    <h3>Cliente: ${data.nombreCliente}</h3>
+                    <p><strong>Proyecto:</strong> ${data.nombreProyecto}</p>
+                    <p><strong>Tipo de Servicio:</strong> ${data.tipoServicio}</p>
+                    <p><strong>Coste Total:</strong> ${data.costeTotal}</p>
+                    <p><small>Guardada: ${fecha}</small></p>
+                    <p class="estado ${estadoClass}"><strong>Estado:</strong> ${data.estado}</p>
+                </div>
+            `;
+                    contenedor.innerHTML += ofertaHTML;
+                });
+            } catch (error) {
+                console.error("Error cargando ofertas:", error);
+                contenedor.innerHTML = '<p style="color:red; text-align:center; padding: 20px;">Error cargando ofertas.</p>';
+            }
+        }
+
+
+
+        window.saveOffer = async function () {
+            const nombreCliente = document.getElementById('nombreCliente').value.trim();
+            const nombreProyecto = document.getElementById('nombreProyecto').value.trim();
+            const tipoServicio = document.getElementById('tipoServicio').value;
+            const alcanceOpciones = document.getElementById('alcanceOpciones').value.trim();
+            const informacionServicio = document.getElementById('informacionServicio').value.trim();
+
+            if (!nombreCliente || !nombreProyecto || !tipoServicio || carrito.length === 0) {
+                alert('Por favor, completa todos los campos obligatorios y añade al menos un servicio al carrito.');
+                return;
+            }
+
+            const oferta = {
+                nombreCliente,
+                nombreProyecto,
+                tipoServicio,
+                alcanceOpciones,
+                informacionServicio,
+                carritoServicio: carrito,
+                costeTotal: document.getElementById('total').textContent,
+                estado: 'Pendiente', // Siempre pendiente al crear
+                propietario: 'Usuario Actual',
+                creado: serverTimestamp()
+            };
+
+
+            try {
+                await addDoc(collection(db, "ofertas"), oferta);
+                alert('¡Oferta guardada exitosamente en Firebase!');
+                clearAll();
+                mostrarOfertas();  // <-- Aquí refrescamos la lista de ofertas
+            } catch (error) {
+                console.error('Error guardando oferta:', error);
+                alert('Error al guardar la oferta, intenta de nuevo.');
+            }
+        };
+
+
+        window.generatePDF = function () {
+            if (carrito.length === 0) {
+                alert('Añade servicios al carrito antes de generar el PDF.');
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(18);
+            doc.text("Oferta de Servicios", 14, 20);
+
+            const nombreCliente = document.getElementById('nombreCliente').value.trim();
+            const nombreProyecto = document.getElementById('nombreProyecto').value.trim();
+            const tipoServicio = document.getElementById('tipoServicio').value;
+            const alcanceOpciones = document.getElementById('alcanceOpciones').value.trim();
+            const informacionServicio = document.getElementById('informacionServicio').value.trim();
+
+            doc.setFontSize(12);
+            doc.text(`Cliente: ${nombreCliente}`, 14, 30);
+            doc.text(`Proyecto: ${nombreProyecto}`, 14, 37);
+            doc.text(`Tipo de Servicio: ${tipoServicio}`, 14, 44);
+            doc.text(`Alcance:`, 14, 51);
+            doc.text(doc.splitTextToSize(alcanceOpciones, 180), 14, 58);
+            let yPos = 58 + doc.splitTextToSize(alcanceOpciones, 180).length * 7;
+
+            doc.text(`Información adicional:`, 14, yPos);
+            yPos += 7;
+            const infoLines = doc.splitTextToSize(informacionServicio, 180);
+            doc.text(infoLines, 14, yPos);
+            yPos += infoLines.length * 7 + 5;
+
+            doc.setFontSize(14);
+            doc.text("Servicios contratados:", 14, yPos);
+            yPos += 7;
+            doc.setFontSize(12);
+
+            doc.text("Servicio", 14, yPos);
+            doc.text("Cantidad", 90, yPos);
+            doc.text("Precio (€)", 130, yPos);
+            doc.text("Subtotal (€)", 170, yPos);
+            yPos += 7;
+
+            carrito.forEach(item => {
+                const precioConDescuento = item.precio * (1 - item.descuento / 100);
+                const subtotal = precioConDescuento * item.cantidad;
+
+                doc.text(item.nombre, 14, yPos);
+                doc.text(item.cantidad.toString(), 95, yPos);
+                doc.text(item.precio.toFixed(2), 135, yPos);
+                doc.text(subtotal.toFixed(2), 175, yPos);
+                yPos += 7;
+            });
+
+            yPos += 10;
+
+            const subtotalText = document.getElementById('subtotal').textContent;
+            const descuentosText = document.getElementById('descuentos').textContent;
+            const totalText = document.getElementById('total').textContent;
+
+            doc.text(`Subtotal: ${subtotalText}`, 14, yPos);
+            yPos += 7;
+            doc.text(`Descuentos: ${descuentosText}`, 14, yPos);
+            yPos += 7;
+            doc.setFontSize(14);
+            doc.text(`Total: ${totalText}`, 14, yPos);
+
+            doc.save(`Oferta_${nombreCliente.replace(/\s+/g, '_')}.pdf`);
+        };
+
+        window.clearAll = function () {
+            if (confirm('¿Estás seguro de que quieres limpiar todo?')) {
+                document.getElementById('nombreCliente').value = '';
+                document.getElementById('nombreProyecto').value = '';
+                document.getElementById('tipoServicio').value = '';
+                document.getElementById('alcanceOpciones').value = '';
+                document.getElementById('informacionServicio').value = '';
+                carrito = [];
+
+                document.querySelectorAll('.quantity-input').forEach(input => {
+                    input.value = 0;
+                });
+
+                updateCart();
+                filterServices();
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            filterServices();
+            mostrarOfertas();
+        });
+    </script>
+
+</body>
+
+</html>
