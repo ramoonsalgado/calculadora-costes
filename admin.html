@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <link rel="icon" type="image/png" href="logo.png" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            line-height: 1.6;
+            color: #334155;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .card-header h2 {
+            color: #1e293b;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .icon {
+            font-size: 1.5rem;
+        }
+
+        .search-form {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        label {
+            font-weight: 500;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+
+        input,
+        select {
+            padding: 0.75rem 1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8fafc;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+        }
+
+        .btn-secondary:hover {
+            background: #f1f5f9;
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+        }
+
+        .oferta-card {
+            background: white;
+            border: 2px solid #f1f5f9;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .oferta-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .oferta-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .oferta-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .oferta-info {
+            flex: 1;
+        }
+
+        .oferta-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+        }
+
+        .oferta-subtitle {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .status-badge {
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-pendiente {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            color: #1e293b;
+        }
+
+        .status-aprobado {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+        }
+
+        .status-rechazado {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .carrito-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: #f8fafc;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .carrito-table th {
+            background: linear-gradient(135deg, #1e293b, #334155);
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .carrito-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .carrito-table tr:hover {
+            background: #f1f5f9;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem;
+            color: #64748b;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #e5e7eb;
+            border-top: 2px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: #64748b;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .coste-total {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #059669;
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            padding: 0.75rem 1rem;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        .fecha-creacion {
+            color: #64748b;
+            font-size: 0.8rem;
+            font-style: italic;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 1.5rem;
+            }
+
+            .oferta-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <img src="logo.png" alt="Logo" style="height: 60px; margin-bottom: 1rem;" />
+            <h1>🚀 Panel de Administración</h1>
+            <p class="subtitle">Gestiona tus ofertas de manera eficiente</p>
+        </div>
+
+        <div class="main-grid">
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">📋</span>
+                    <h2>Ofertas Pendientes</h2>
+                </div>
+                <div id="listaOfertasPendientes">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Cargando ofertas pendientes...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="icon">🔍</span>
+                    <h2>Buscar Ofertas</h2>
+                </div>
+
+                <div class="search-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="busquedaCliente">Cliente</label>
+                            <input type="text" id="busquedaCliente" placeholder="Nombre del cliente" />
+                        </div>
+                        <div class="form-group">
+                            <label for="busquedaProyecto">Proyecto</label>
+                            <input type="text" id="busquedaProyecto" placeholder="Nombre del proyecto" />
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="busquedaTipoServicio">Tipo de Servicio</label>
+                            <select id="busquedaTipoServicio">
+                                <option value="">-- Todos --</option>
+                                <option value="desarrollo">Desarrollo Web</option>
+                                <option value="diseno">Diseño Gráfico</option>
+                                <option value="marketing">Marketing Digital</option>
+                                <option value="consultoria">Consultoría</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="busquedaEstado">Estado</label>
+                            <select id="busquedaEstado">
+                                <option value="">-- Todos --</option>
+                                <option value="Pendiente">Pendiente</option>
+                                <option value="Aprobado">Aprobado</option>
+                                <option value="Rechazado">Rechazado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button id="btnBuscarOferta" class="btn btn-primary">
+                            🔍 Buscar
+                        </button>
+                        <button id="btnLimpiarBusqueda" class="btn btn-secondary">
+                            🗑️ Limpiar
+                        </button>
+                    </div>
+                </div>
+
+                <div id="resultadosBusqueda"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import {
+            getFirestore, collection, getDocs, query, orderBy, doc, updateDoc
+        } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgFEpvwxe_P5w1JTmrF-IcZ0jWh2j76M4",
+            authDomain: "calculadoracostesfinal.firebaseapp.com",
+            projectId: "calculadoracostesfinal",
+            storageBucket: "calculadoracostesfinal.firebasestorage.app",
+            messagingSenderId: "951863061701",
+            appId: "1:951863061701:web:784ce3733c6b08518d14ac"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        function getEstadoHTML(estado) {
+            const statusClass = estado === "Aprobado" ? "status-aprobado" :
+                estado === "Pendiente" ? "status-pendiente" :
+                    "status-rechazado";
+
+            const icon = estado === "Aprobado" ? "✅" :
+                estado === "Pendiente" ? "⏳" : "❌";
+
+            return `<span class="status-badge ${statusClass}">${icon} ${estado}</span>`;
+        }
+
+        function renderCarritoHTML(carrito) {
+            if (!carrito || carrito.length === 0) {
+                return `<div class="empty-state">
+                    <div class="empty-state-icon">📦</div>
+                    <p>No hay servicios añadidos</p>
+                </div>`;
+            }
+
+            return `
+                <table class="carrito-table">
+                    <thead>
+                        <tr>
+                            <th>Servicio</th>
+                            <th>Precio Unitario</th>
+                            <th>Cantidad</th>
+                            <th>Descuento</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${carrito.map(item => {
+                const precioConDesc = item.precio * (1 - item.descuento / 100);
+                const subtotal = precioConDesc * item.cantidad;
+                return `
+                                <tr>
+                                    <td><strong>${item.nombre}</strong></td>
+                                    <td>€${item.precio.toFixed(2)}</td>
+                                    <td>${item.cantidad}</td>
+                                    <td>${item.descuento > 0 ? item.descuento + '%' : 'Sin descuento'}</td>
+                                    <td><strong>€${subtotal.toFixed(2)}</strong></td>
+                                </tr>
+                            `;
+            }).join('')}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        async function cargarOfertas() {
+            const contenedorPendientes = document.getElementById("listaOfertasPendientes");
+            const ofertasCol = collection(db, "ofertas");
+            const q = query(ofertasCol, orderBy("creado", "desc"));
+
+            try {
+                const snapshot = await getDocs(q);
+                contenedorPendientes.innerHTML = "";
+                let pendientesCount = 0;
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    const id = docSnap.id;
+                    const fecha = data.creado?.toDate?.().toLocaleString() || 'Fecha no disponible';
+                    const carritoHTML = renderCarritoHTML(data.carritoServicio);
+                    const estadoHTML = getEstadoHTML(data.estado);
+
+                    if (data.estado === "Pendiente") {
+                        pendientesCount++;
+                        const ofertaDiv = document.createElement("div");
+                        ofertaDiv.className = "oferta-card fade-in";
+
+                        ofertaDiv.innerHTML = `
+                            <div class="oferta-header">
+                                <div class="oferta-info">
+                                    <div class="oferta-title">${data.nombreCliente}</div>
+                                    <div class="oferta-subtitle">${data.nombreProyecto}</div>
+                                </div>
+                                ${estadoHTML}
+                            </div>
+                            
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <div class="info-label">Tipo de Servicio</div>
+                                    <div class="info-value">${data.tipoServicio}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Alcance</div>
+                                    <div class="info-value">${data.alcanceOpciones}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Coste Total</div>
+                                    <div class="coste-total">${data.costeTotal}</div>
+                                </div>
+                                <div class="info-item">
+                                    <div class="info-label">Fecha de Creación</div>
+                                    <div class="fecha-creacion">${fecha}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="info-item" style="margin: 1rem 0;">
+                                <div class="info-label">Información Adicional</div>
+                                <div class="info-value">${data.informacionServicio}</div>
+                            </div>
+                            
+                            ${carritoHTML}
+                            
+                            <div class="action-buttons">
+                                <button id="aprobar-${id}" class="btn btn-success">
+                                    ✅ Aprobar
+                                </button>
+                                <button id="rechazar-${id}" class="btn btn-danger">
+                                    ❌ Rechazar
+                                </button>
+                            </div>
+                        `;
+
+                        contenedorPendientes.appendChild(ofertaDiv);
+
+                        document.getElementById(`aprobar-${id}`).addEventListener("click", () => cambiarEstado(id, "Aprobado"));
+                        document.getElementById(`rechazar-${id}`).addEventListener("click", () => cambiarEstado(id, "Rechazado"));
+                    }
+                });
+
+                if (pendientesCount === 0) {
+                    contenedorPendientes.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🎉</div>
+                            <p>No hay ofertas pendientes para revisar</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                contenedorPendientes.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <p>Error al cargar las ofertas</p>
+                    </div>
+                `;
+                console.error(error);
+            }
+        }
+
+        async function cambiarEstado(idOferta, nuevoEstado) {
+            const ofertaRef = doc(db, "ofertas", idOferta);
+            try {
+                await updateDoc(ofertaRef, { estado: nuevoEstado });
+
+                // Crear notificación personalizada
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${nuevoEstado === 'Aprobado' ? '#10b981' : '#ef4444'};
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                `;
+                notification.innerHTML = `
+                    <strong>${nuevoEstado === 'Aprobado' ? '✅' : '❌'} Oferta ${nuevoEstado.toLowerCase()}</strong>
+                    <p style="margin-top: 0.25rem; font-size: 0.9rem; opacity: 0.9;">El estado se ha actualizado correctamente</p>
+                `;
+
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 3000);
+
+                cargarOfertas();
+            } catch (error) {
+                alert("Error al cambiar el estado.");
+                console.error(error);
+            }
+        }
+
+        async function buscarOfertas() {
+            const clienteFiltro = document.getElementById('busquedaCliente').value.trim().toLowerCase();
+            const proyectoFiltro = document.getElementById('busquedaProyecto').value.trim().toLowerCase();
+            const tipoServicioFiltro = document.getElementById('busquedaTipoServicio').value;
+            const estadoFiltro = document.getElementById('busquedaEstado').value;
+
+            const contenedor = document.getElementById('resultadosBusqueda');
+            contenedor.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Cargando resultados...</p>
+                </div>
+            `;
+
+            try {
+                const ofertasCol = collection(db, "ofertas");
+                const q = query(ofertasCol, orderBy("creado", "desc"));
+                const snapshot = await getDocs(q);
+
+                const resultados = [];
+
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+
+                    const coincideCliente = !clienteFiltro || (data.nombreCliente && data.nombreCliente.toLowerCase().includes(clienteFiltro));
+                    const coincideProyecto = !proyectoFiltro || (data.nombreProyecto && data.nombreProyecto.toLowerCase().includes(proyectoFiltro));
+                    const coincideTipo = !tipoServicioFiltro || data.tipoServicio === tipoServicioFiltro;
+                    const coincideEstado = !estadoFiltro || data.estado === estadoFiltro;
+
+                    if (coincideCliente && coincideProyecto && coincideTipo && coincideEstado) {
+                        resultados.push({ id: docSnap.id, data });
+                    }
+                });
+
+                if (resultados.length === 0) {
+                    contenedor.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🔍</div>
+                            <p>No se encontraron ofertas que coincidan con la búsqueda</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                contenedor.innerHTML = '';
+                resultados.forEach(({ id, data }) => {
+                    const fecha = data.creado?.toDate?.().toLocaleString() || 'Fecha no disponible';
+                    const carritoHTML = renderCarritoHTML(data.carritoServicio);
+                    const estadoHTML = getEstadoHTML(data.estado);
+
+                    const resultadoDiv = document.createElement('div');
+                    resultadoDiv.className = 'oferta-card fade-in';
+                    resultadoDiv.innerHTML = `
+                        <div class="oferta-header">
+                            <div class="oferta-info">
+                                <div class="oferta-title">${data.nombreCliente}</div>
+                                <div class="oferta-subtitle">${data.nombreProyecto}</div>
+                            </div>
+                            ${estadoHTML}
+                        </div>
+                        
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <div class="info-label">Tipo de Servicio</div>
+                                <div class="info-value">${data.tipoServicio}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Alcance</div>
+                                <div class="info-value">${data.alcanceOpciones}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Coste Total</div>
+                                <div class="coste-total">${data.costeTotal}</div>
+                            </div>
+                            <div class="info-item">
+                                <div class="info-label">Fecha de Creación</div>
+                                <div class="fecha-creacion">${fecha}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="info-item" style="margin: 1rem 0;">
+                            <div class="info-label">Información Adicional</div>
+                            <div class="info-value">${data.informacionServicio}</div>
+                        </div>
+                        
+                        ${carritoHTML}
+                    `;
+
+                    contenedor.appendChild(resultadoDiv);
+                });
+            } catch (error) {
+                contenedor.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⚠️</div>
+                        <p>Error al realizar la búsqueda</p>
+                    </div>
+                `;
+                console.error(error);
+            }
+        }
+
+        document.getElementById('btnBuscarOferta').addEventListener('click', buscarOfertas);
+
+        document.getElementById('btnLimpiarBusqueda').addEventListener('click', () => {
+            document.getElementById('busquedaCliente').value = '';
+            document.getElementById('busquedaProyecto').value = '';
+            document.getElementById('busquedaTipoServicio').value = '';
+            document.getElementById('busquedaEstado').value = '';
+            document.getElementById('resultadosBusqueda').innerHTML = '';
+        });
+
+        // Agregar estilos para animaciones
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        cargarOfertas();
+    </script>
+</body>
+
+</html>
