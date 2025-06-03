@@ -1150,6 +1150,13 @@
             const año = fechaActual.getFullYear();
             const fechaFormateada = `${dia}/${mes}/${año}`;
 
+            // Función para mover el símbolo € al final
+            function formatEuroEnd(text) {
+                // Quita el símbolo € del inicio si está
+                const number = text.replace('€', '').trim();
+                return `${number} €`;
+            }
+
             // Carga el logo y luego genera el PDF
             getBase64ImageFromUrl('logo.png').then(logoBase64 => {
                 // Añadir logo (posicion x=14, y=10, ancho=40, alto=20)
@@ -1254,21 +1261,16 @@
 
                     doc.text(item.nombre, 14, currentY);
                     doc.text(item.cantidad.toString(), 70, currentY);
-                    doc.text(`€${item.precio.toFixed(2)}`, 100, currentY);
+                    // Aplica formatEuroEnd para Precio y Subtotal
+                    doc.text(formatEuroEnd(`€${item.precio.toFixed(2)}`), 100, currentY);
                     doc.text(descuentoTexto, 135, currentY);
-                    doc.text(`€${subtotal.toFixed(2)}`, 170, currentY);
+                    doc.text(formatEuroEnd(`€${subtotal.toFixed(2)}`), 170, currentY);
                     currentY += 7;
                 });
 
 
-                currentY += 10;
 
-                // Función para mover el símbolo € al final
-                function formatEuroEnd(text) {
-                    // Quita el símbolo € del inicio si está
-                    const number = text.replace('€', '').trim();
-                    return `${number} €`;
-                }
+                currentY += 10;
 
                 // Resumen final con colores y negrita para total
                 const subtotalText = document.getElementById('subtotal').textContent;
