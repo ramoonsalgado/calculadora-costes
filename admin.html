@@ -470,10 +470,10 @@
                         <label for="filtroTipoServicioPendientes" style="font-weight: 600; color: #334155; margin-right: 0.5rem;">Tipo de Servicio:</label>
                         <select id="filtroTipoServicioPendientes" style="padding: 0.3rem 0.6rem; border-radius: 8px; border: 1.5px solid #ccc;">
                             <option value="">-- Todos --</option>
-                            <option value="desarrollo">Desarrollo Web</option>
-                            <option value="diseno">Diseño Gráfico</option>
-                            <option value="marketing">Marketing Digital</option>
-                            <option value="consultoria">Consultoría</option>
+                            <option value="Desarrollo Web">Desarrollo Web</option>
+                            <option value="Diseño Gráfico">Diseño Gráfico</option>
+                            <option value="Marketing Digital">Marketing Digital</option>
+                            <option value="Consultoría">Consultoría</option>
                         </select>
                     </div>
                 </div>
@@ -508,10 +508,10 @@
                             <label for="busquedaTipoServicio">Tipo de Servicio</label>
                             <select id="busquedaTipoServicio">
                                 <option value="">-- Todos --</option>
-                                <option value="desarrollo">Desarrollo Web</option>
-                                <option value="diseno">Diseño Gráfico</option>
-                                <option value="marketing">Marketing Digital</option>
-                                <option value="consultoria">Consultoría</option>
+                                <option value="Desarrollo Web">Desarrollo Web</option>
+                                <option value="Diseño Gráfico">Diseño Gráfico</option>
+                                <option value="Marketing Digital">Marketing Digital</option>
+                                <option value="Consultoría">Consultoría</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -631,6 +631,7 @@
                     const carritoHTML = renderCarritoHTML(data.carritoServicio);
                     const estadoHTML = getEstadoHTML(data.estado);
 
+                    // Aquí adaptamos la comparación para que use los valores exactos que cambiaste:
                     if (data.estado === "Pendiente" && (filtroTipo === "" || data.tipoServicio === filtroTipo)) {
                         pendientesCount++;
                         const ofertaDiv = document.createElement("div");
