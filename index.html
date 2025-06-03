@@ -1232,13 +1232,15 @@
                 currentY += 10;
 
                 // Cabeceras tabla
+                // Cabeceras tabla
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(12);
                 doc.setTextColor('#2563eb'); // azul
                 doc.text("Servicio", 14, currentY);
-                doc.text("Cantidad", 90, currentY);
-                doc.text("Precio (€)", 130, currentY);
-                doc.text("Subtotal (€)", 175, currentY);
+                doc.text("Cantidad", 75, currentY);
+                doc.text("Precio (€)", 110, currentY);
+                doc.text("Descuento", 145, currentY);
+                doc.text("Subtotal (€)", 185, currentY);
                 currentY += 8;
 
                 // Datos servicios (normal)
@@ -1247,17 +1249,27 @@
                 doc.setTextColor('#334155'); // gris oscuro
 
                 carrito.forEach(item => {
+                    const descuentoTexto = item.descuento > 0 ? item.descuento + '%' : 'No';
                     const precioConDescuento = item.precio * (1 - item.descuento / 100);
                     const subtotal = precioConDescuento * item.cantidad;
 
                     doc.text(item.nombre, 14, currentY);
-                    doc.text(item.cantidad.toString(), 95, currentY);
-                    doc.text(item.precio.toFixed(2), 135, currentY);
-                    doc.text(subtotal.toFixed(2), 175, currentY);
+                    doc.text(item.cantidad.toString(), 80, currentY);
+                    doc.text(`€${item.precio.toFixed(2)}`, 110, currentY);
+                    doc.text(descuentoTexto, 150, currentY);
+                    doc.text(`€${subtotal.toFixed(2)}`, 190, currentY);
                     currentY += 7;
                 });
 
+
                 currentY += 10;
+
+                // Función para mover el símbolo € al final
+                function formatEuroEnd(text) {
+                    // Quita el símbolo € del inicio si está
+                    const number = text.replace('€', '').trim();
+                    return `${number} €`;
+                }
 
                 // Resumen final con colores y negrita para total
                 const subtotalText = document.getElementById('subtotal').textContent;
@@ -1267,15 +1279,16 @@
                 doc.setFont('helvetica', 'normal');
                 doc.setFontSize(12);
                 doc.setTextColor('#475569');
-                doc.text(`Subtotal: ${subtotalText}`, 14, currentY);
+                doc.text(`Subtotal: ${formatEuroEnd(subtotalText)}`, 14, currentY);
                 currentY += 7;
-                doc.text(`Descuentos: ${descuentosText}`, 14, currentY);
+                doc.text(`Descuentos: ${formatEuroEnd(descuentosText)}`, 14, currentY);
                 currentY += 10;
 
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(14);
                 doc.setTextColor('#059669'); // verde
-                doc.text(`Total: ${totalText}`, 14, currentY);
+                doc.text(`Total: ${formatEuroEnd(totalText)}`, 14, currentY);
+
 
                 // Guardar PDF con nombre personalizado
                 const nombreArchivo = `Oferta_${nombreCliente.replace(/\s+/g, '_')}_${fechaFormateada.replace(/\//g, '-')}.pdf`;
