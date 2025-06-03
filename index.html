@@ -1268,8 +1268,7 @@
                 // Línea separadora debajo del encabezado
                 doc.setDrawColor(100);
                 doc.setLineWidth(0.5);
-                doc.line(startX, currentY - 8, startX + columnWidths.reduce((a, b) => a + b, 0), currentY - 8);
-                currentY += 5;
+                doc.line(startX, currentY - 7, startX + columnWidths.reduce((a, b) => a + b, 0), currentY - 7);
 
                 // Datos servicios con texto centrado y líneas entre filas
                 doc.setFont('helvetica', 'normal');
@@ -1296,13 +1295,13 @@
                         doc.text(valor, posX, currentY);
                         x += columnWidths[i];
                     });
-
+                    currentY += 7;
                     // Línea horizontal separadora de fila
                     doc.setDrawColor(220);
                     doc.setLineWidth(0.3);
                     doc.line(startX, currentY - 2, startX + columnWidths.reduce((a, b) => a + b, 0), currentY - 2);
 
-                    currentY += 7;
+
                 });
 
                 currentY += 10;
