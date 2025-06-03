@@ -887,16 +887,17 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Productos con tipos actualizados para que coincidan con los valores de los <option>
         const productos = [
-            { id: 1, nombre: 'Sitio Web Básico', tipo: 'desarrollo', precio: 800, descuento: 0, activo: true },
-            { id: 2, nombre: 'Sitio Web Avanzado', tipo: 'desarrollo', precio: 1500, descuento: 10, activo: true },
-            { id: 3, nombre: 'E-commerce', tipo: 'desarrollo', precio: 2500, descuento: 15, activo: true },
-            { id: 4, nombre: 'Logo Design', tipo: 'diseno', precio: 300, descuento: 0, activo: true },
-            { id: 5, nombre: 'Identidad Corporativa', tipo: 'diseno', precio: 800, descuento: 5, activo: true },
-            { id: 6, nombre: 'Campaña SEO', tipo: 'marketing', precio: 600, descuento: 0, activo: true },
-            { id: 7, nombre: 'Gestión Redes Sociales', tipo: 'marketing', precio: 400, descuento: 10, activo: true },
-            { id: 8, nombre: 'Consultoría Estratégica', tipo: 'consultoria', precio: 1200, descuento: 0, activo: true },
-            { id: 9, nombre: 'Auditoría Digital', tipo: 'consultoria', precio: 900, descuento: 5, activo: true }
+            { id: 1, nombre: 'Sitio Web Básico', tipo: 'Desarrollo Web', precio: 800, descuento: 0, activo: true },
+            { id: 2, nombre: 'Sitio Web Avanzado', tipo: 'Desarrollo Web', precio: 1500, descuento: 10, activo: true },
+            { id: 3, nombre: 'E-commerce', tipo: 'Desarrollo Web', precio: 2500, descuento: 15, activo: true },
+            { id: 4, nombre: 'Logo Design', tipo: 'Diseño Gráfico', precio: 300, descuento: 0, activo: true },
+            { id: 5, nombre: 'Identidad Corporativa', tipo: 'Diseño Gráfico', precio: 800, descuento: 5, activo: true },
+            { id: 6, nombre: 'Campaña SEO', tipo: 'Marketing Digital', precio: 600, descuento: 0, activo: true },
+            { id: 7, nombre: 'Gestión Redes Sociales', tipo: 'Marketing Digital', precio: 400, descuento: 10, activo: true },
+            { id: 8, nombre: 'Consultoría Estratégica', tipo: 'Consultoría', precio: 1200, descuento: 0, activo: true },
+            { id: 9, nombre: 'Auditoría Digital', tipo: 'Consultoría', precio: 900, descuento: 5, activo: true }
         ];
 
         let carrito = [];
@@ -1098,7 +1099,6 @@
                     await generatePDF();  // Espera a que el PDF termine
                 }
 
-                // Limpia y muestra ofertas justo después, sin setTimeout
                 clearAllNoConfirm();
                 mostrarOfertas();
 
@@ -1158,26 +1158,21 @@
                 const año = fechaActual.getFullYear();
                 const fechaFormateada = `${dia}/${mes}/${año}`;
 
-                // Función para mover el símbolo € al final
                 function formatEuroEnd(text) {
                     const number = text.replace('€', '').trim();
                     return `${number} €`;
                 }
 
-                // Función para centrar texto dentro de una columna
                 function centerText(text, x, width, doc) {
                     const textWidth = doc.getTextWidth(text);
                     return x + (width - textWidth) / 2;
                 }
 
-                // Carga logo y luego genera PDF
                 getBase64ImageFromUrl('logo.png').then(logoBase64 => {
-                    // Añadir logo
                     doc.addImage(logoBase64, 'PNG', 14, 10, 40, 20);
 
                     let currentY = 35;
 
-                    // Título
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(20);
                     doc.setTextColor('#1e40af');
@@ -1185,7 +1180,6 @@
 
                     currentY += 10;
 
-                    // Fecha
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(12);
                     doc.setTextColor('#334155');
@@ -1197,7 +1191,6 @@
                     const alcanceOpciones = document.getElementById('alcanceOpciones').value.trim();
                     const informacionServicio = document.getElementById('informacionServicio').value.trim();
 
-                    // Datos cliente y proyecto
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(14);
                     doc.setTextColor('#1e293b');
@@ -1215,7 +1208,6 @@
 
                     currentY += 28;
 
-                    // Alcance
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(14);
                     doc.setTextColor('#1e293b');
@@ -1228,7 +1220,6 @@
                     doc.text(lines, 14, currentY + 7);
                     currentY += 7 + lines.length * 7;
 
-                    // Información adicional
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(14);
                     doc.setTextColor('#1e293b');
@@ -1242,27 +1233,23 @@
                     doc.text(lines, 14, currentY);
                     currentY += lines.length * 7 + 5;
 
-                    // Servicios contratados (título)
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(16);
                     doc.setTextColor('#1e40af');
                     doc.text("Servicios contratados:", 14, currentY);
                     currentY += 10;
 
-                    // Definir columnas (ancho y posición X)
                     const startX = 14;
-                    const columnWidths = [60, 25, 30, 30, 35]; // Ajusta anchos según necesidad
+                    const columnWidths = [60, 25, 30, 30, 35];
                     const headers = ["Servicio", "Cantidad", "Precio (€)", "Descuento", "Subtotal (€)"];
 
-                    // Dibujar encabezado con fondo degradado
                     const headerHeight = 10;
-                    doc.setFillColor(224, 235, 255); // azul muy claro
+                    doc.setFillColor(224, 235, 255);
                     doc.rect(startX, currentY - 7, columnWidths.reduce((a, b) => a + b, 0), headerHeight, 'F');
 
-                    // Texto encabezado centrado y en negrita
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(12);
-                    doc.setTextColor('#2563eb'); // azul
+                    doc.setTextColor('#2563eb');
 
                     let x = startX;
                     headers.forEach((header, i) => {
@@ -1273,12 +1260,10 @@
 
                     currentY += 10;
 
-                    // Línea separadora debajo del encabezado
                     doc.setDrawColor(100);
                     doc.setLineWidth(0.5);
                     doc.line(startX, currentY - 7, startX + columnWidths.reduce((a, b) => a + b, 0), currentY - 7);
 
-                    // Datos servicios con texto centrado y líneas entre filas
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(12);
                     doc.setTextColor('#334155');
@@ -1304,7 +1289,6 @@
                             x += columnWidths[i];
                         });
                         currentY += 10;
-                        // Línea horizontal separadora de fila
                         doc.setDrawColor(220);
                         doc.setLineWidth(0.3);
                         doc.line(startX, currentY - 7, startX + columnWidths.reduce((a, b) => a + b, 0), currentY - 7);
@@ -1312,7 +1296,6 @@
 
                     currentY += 10;
 
-                    // Resumen final con colores y negrita para total
                     const subtotalText = document.getElementById('subtotal').textContent;
                     const descuentosText = document.getElementById('descuentos').textContent;
                     const totalText = document.getElementById('total').textContent;
@@ -1330,7 +1313,6 @@
                     doc.setTextColor('#059669');
                     doc.text(`Total: ${formatEuroEnd(totalText)}`, startX, currentY);
 
-                    // Guardar PDF con nombre personalizado
                     const nombreArchivo = `Oferta_${nombreCliente.replace(/\s+/g, '_')}_${fechaFormateada.replace(/\//g, '-')}.pdf`;
                     doc.save(nombreArchivo);
 
@@ -1339,8 +1321,6 @@
                 }).catch(err => {
                     console.error('Error cargando logo:', err);
                     alert('Error al cargar el logo. El PDF se generará sin logo.');
-
-                    // Generar PDF sin logo (mismo contenido, sin doc.addImage)
 
                     let currentY = 20;
 
@@ -1362,7 +1342,6 @@
                     const alcanceOpciones = document.getElementById('alcanceOpciones').value.trim();
                     const informacionServicio = document.getElementById('informacionServicio').value.trim();
 
-                    // Datos cliente y proyecto
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(14);
                     doc.setTextColor('#1e293b');
@@ -1380,7 +1359,6 @@
 
                     currentY += 28;
 
-                    // Alcance
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(14);
                     doc.setTextColor('#1e293b');
@@ -1393,7 +1371,6 @@
                     doc.text(lines, 14, currentY + 7);
                     currentY += 7 + lines.length * 7;
 
-                    // Información adicional
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(14);
                     doc.setTextColor('#1e293b');
@@ -1407,14 +1384,12 @@
                     doc.text(lines, 14, currentY);
                     currentY += lines.length * 7 + 5;
 
-                    // Servicios contratados (título)
                     doc.setFont('helvetica', 'bold');
                     doc.setFontSize(16);
                     doc.setTextColor('#1e40af');
                     doc.text("Servicios contratados:", 14, currentY);
                     currentY += 10;
 
-                    // Definir columnas (ancho y posición X)
                     const startX = 14;
                     const columnWidths = [60, 25, 30, 30, 35];
                     const headers = ["Servicio", "Cantidad", "Precio (€)", "Descuento", "Subtotal (€)"];
@@ -1496,9 +1471,6 @@
                 });
             });
         };
-
-
-
 
         window.clearAll = function () {
             if (confirm('¿Estás seguro de que quieres limpiar todo?')) {
