@@ -2,8 +2,8 @@
 <html lang="es">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Panel de Administración</title>
     <link rel="icon" type="image/png" href="logo.png" />
 
@@ -461,9 +461,21 @@
 
         <div class="main-grid">
             <div class="card">
-                <div class="card-header">
-                    <span class="icon">📋</span>
-                    <h2>Ofertas Pendientes</h2>
+                <div class="card-header" style="justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <span class="icon">📋</span>
+                        <h2>Ofertas Pendientes</h2>
+                    </div>
+                    <div>
+                        <label for="filtroTipoServicioPendientes" style="font-weight: 600; color: #334155; margin-right: 0.5rem;">Tipo de Servicio:</label>
+                        <select id="filtroTipoServicioPendientes" style="padding: 0.3rem 0.6rem; border-radius: 8px; border: 1.5px solid #ccc;">
+                            <option value="">-- Todos --</option>
+                            <option value="Desarrollo Web">Desarrollo Web</option>
+                            <option value="Diseño Gráfico">Diseño Gráfico</option>
+                            <option value="Marketing Digital">Marketing Digital</option>
+                            <option value="Consultoría">Consultoría</option>
+                        </select>
+                    </div>
                 </div>
                 <div id="listaOfertasPendientes">
                     <div class="loading">
@@ -496,10 +508,10 @@
                             <label for="busquedaTipoServicio">Tipo de Servicio</label>
                             <select id="busquedaTipoServicio">
                                 <option value="">-- Todos --</option>
-                                <option value="desarrollo">Desarrollo Web</option>
-                                <option value="diseno">Diseño Gráfico</option>
-                                <option value="marketing">Marketing Digital</option>
-                                <option value="consultoria">Consultoría</option>
+                                <option value="Desarrollo Web">Desarrollo Web</option>
+                                <option value="Diseño Gráfico">Diseño Gráfico</option>
+                                <option value="Marketing Digital">Marketing Digital</option>
+                                <option value="Consultoría">Consultoría</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -531,7 +543,13 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
         import {
-            getFirestore, collection, getDocs, query, orderBy, doc, updateDoc
+            getFirestore,
+            collection,
+            getDocs,
+            query,
+            orderBy,
+            doc,
+            updateDoc
         } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -597,6 +615,7 @@
 
         async function cargarOfertas() {
             const contenedorPendientes = document.getElementById("listaOfertasPendientes");
+            const filtroTipo = document.getElementById("filtroTipoServicioPendientes").value;
             const ofertasCol = collection(db, "ofertas");
             const q = query(ofertasCol, orderBy("creado", "desc"));
 
@@ -612,7 +631,8 @@
                     const carritoHTML = renderCarritoHTML(data.carritoServicio);
                     const estadoHTML = getEstadoHTML(data.estado);
 
-                    if (data.estado === "Pendiente") {
+                    // Aquí adaptamos la comparación para que use los valores exactos que cambiaste:
+                    if (data.estado === "Pendiente" && (filtroTipo === "" || data.tipoServicio === filtroTipo)) {
                         pendientesCount++;
                         const ofertaDiv = document.createElement("div");
                         ofertaDiv.className = "oferta-card fade-in";
@@ -693,7 +713,6 @@
             try {
                 await updateDoc(ofertaRef, { estado: nuevoEstado });
 
-                // Determinar palabra correcta en femenino o masculino
                 let estadoTexto = '';
                 if (nuevoEstado === 'Aprobado') {
                     estadoTexto = 'aprobada';
@@ -703,7 +722,6 @@
                     estadoTexto = nuevoEstado.toLowerCase();
                 }
 
-                // Crear notificación personalizada
                 const notification = document.createElement('div');
                 notification.style.cssText = `
             position: fixed;
@@ -731,7 +749,6 @@
                 console.error(error);
             }
         }
-
 
         async function buscarOfertas() {
             const clienteFiltro = document.getElementById('busquedaCliente').value.trim().toLowerCase();
@@ -844,7 +861,10 @@
             document.getElementById('resultadosBusqueda').innerHTML = '';
         });
 
-        // Agregar estilos para animaciones
+        document.getElementById("filtroTipoServicioPendientes").addEventListener("change", () => {
+            cargarOfertas();
+        });
+
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideIn {
