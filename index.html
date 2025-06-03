@@ -1122,221 +1122,220 @@
                 img.src = imageUrl;
             });
         }
-    window.generatePDF = function () {
-    const nombreCliente = document.getElementById('nombreCliente').value.trim();
-    const nombreProyecto = document.getElementById('nombreProyecto').value.trim();
+        window.generatePDF = function () {
+            const nombreCliente = document.getElementById('nombreCliente').value.trim();
+            const nombreProyecto = document.getElementById('nombreProyecto').value.trim();
 
-    if (!nombreCliente) {
-        alert('Por favor, ingresa el nombre del cliente antes de generar el PDF.');
-        return;
-    }
+            if (!nombreCliente) {
+                alert('Por favor, ingresa el nombre del cliente antes de generar el PDF.');
+                return;
+            }
 
-    if (!nombreProyecto) {
-        alert('Por favor, ingresa el nombre del proyecto antes de generar el PDF.');
-        return;
-    }
+            if (!nombreProyecto) {
+                alert('Por favor, ingresa el nombre del proyecto antes de generar el PDF.');
+                return;
+            }
 
-    if (carrito.length === 0) {
-        alert('Añade al menos un servicio al carrito antes de generar el PDF.');
-        return;
-    }
+            if (carrito.length === 0) {
+                alert('Añade al menos un servicio al carrito antes de generar el PDF.');
+                return;
+            }
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
-    const fechaActual = new Date();
-    const dia = String(fechaActual.getDate()).padStart(2, '0');
-    const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
-    const año = fechaActual.getFullYear();
-    const fechaFormateada = `${dia}/${mes}/${año}`;
+            const fechaActual = new Date();
+            const dia = String(fechaActual.getDate()).padStart(2, '0');
+            const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
+            const año = fechaActual.getFullYear();
+            const fechaFormateada = `${dia}/${mes}/${año}`;
 
-    // Función para mover el símbolo € al final
-    function formatEuroEnd(text) {
-        const number = text.replace('€', '').trim();
-        return `${number} €`;
-    }
+            // Función para mover el símbolo € al final
+            function formatEuroEnd(text) {
+                const number = text.replace('€', '').trim();
+                return `${number} €`;
+            }
 
-    // Función para centrar texto dentro de una columna
-    function centerText(text, x, width, doc) {
-        const textWidth = doc.getTextWidth(text);
-        return x + (width - textWidth) / 2;
-    }
+            // Función para centrar texto dentro de una columna
+            function centerText(text, x, width, doc) {
+                const textWidth = doc.getTextWidth(text);
+                return x + (width - textWidth) / 2;
+            }
 
-    // Carga logo y luego genera PDF
-    getBase64ImageFromUrl('logo.png').then(logoBase64 => {
-        // Añadir logo
-        doc.addImage(logoBase64, 'PNG', 14, 10, 40, 20);
+            // Carga logo y luego genera PDF
+            getBase64ImageFromUrl('logo.png').then(logoBase64 => {
+                // Añadir logo
+                doc.addImage(logoBase64, 'PNG', 14, 10, 40, 20);
 
-        let currentY = 35;
+                let currentY = 35;
 
-        // Título
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(20);
-        doc.setTextColor('#1e40af');
-        doc.text("Oferta de Servicios", 14, currentY);
+                // Título
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(20);
+                doc.setTextColor('#1e40af');
+                doc.text("Oferta de Servicios", 14, currentY);
 
-        currentY += 10;
+                currentY += 10;
 
-        // Fecha
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(12);
-        doc.setTextColor('#334155');
-        doc.text(`Fecha: ${fechaFormateada}`, 14, currentY);
+                // Fecha
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(12);
+                doc.setTextColor('#334155');
+                doc.text(`Fecha: ${fechaFormateada}`, 14, currentY);
 
-        currentY += 8;
+                currentY += 8;
 
-        const tipoServicio = document.getElementById('tipoServicio').value;
-        const alcanceOpciones = document.getElementById('alcanceOpciones').value.trim();
-        const informacionServicio = document.getElementById('informacionServicio').value.trim();
+                const tipoServicio = document.getElementById('tipoServicio').value;
+                const alcanceOpciones = document.getElementById('alcanceOpciones').value.trim();
+                const informacionServicio = document.getElementById('informacionServicio').value.trim();
 
-        // Datos cliente y proyecto
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(14);
-        doc.setTextColor('#1e293b');
-        doc.text(`Cliente:`, 14, currentY);
-        doc.text(`Proyecto:`, 14, currentY + 8);
-        doc.text(`Tipo de Servicio:`, 14, currentY + 16);
+                // Datos cliente y proyecto
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor('#1e293b');
+                doc.text(`Cliente:`, 14, currentY);
+                doc.text(`Proyecto:`, 14, currentY + 8);
+                doc.text(`Tipo de Servicio:`, 14, currentY + 16);
 
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(14);
-        doc.setTextColor('#475569');
-        const valorX = 60;
-        doc.text(nombreCliente, valorX, currentY);
-        doc.text(nombreProyecto, valorX, currentY + 8);
-        doc.text(tipoServicio, valorX, currentY + 16);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(14);
+                doc.setTextColor('#475569');
+                const valorX = 60;
+                doc.text(nombreCliente, valorX, currentY);
+                doc.text(nombreProyecto, valorX, currentY + 8);
+                doc.text(tipoServicio, valorX, currentY + 16);
 
-        currentY += 28;
+                currentY += 28;
 
-        // Alcance
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(14);
-        doc.setTextColor('#1e293b');
-        doc.text(`Alcance:`, 14, currentY);
+                // Alcance
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor('#1e293b');
+                doc.text(`Alcance:`, 14, currentY);
 
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(12);
-        doc.setTextColor('#475569');
-        let lines = doc.splitTextToSize(alcanceOpciones, 180);
-        doc.text(lines, 14, currentY + 7);
-        currentY += 7 + lines.length * 7;
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(12);
+                doc.setTextColor('#475569');
+                let lines = doc.splitTextToSize(alcanceOpciones, 180);
+                doc.text(lines, 14, currentY + 7);
+                currentY += 7 + lines.length * 7;
 
-        // Información adicional
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(14);
-        doc.setTextColor('#1e293b');
-        doc.text(`Información adicional:`, 14, currentY);
-        currentY += 7;
+                // Información adicional
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor('#1e293b');
+                doc.text(`Información adicional:`, 14, currentY);
+                currentY += 7;
 
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(12);
-        doc.setTextColor('#475569');
-        lines = doc.splitTextToSize(informacionServicio, 180);
-        doc.text(lines, 14, currentY);
-        currentY += lines.length * 7 + 5;
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(12);
+                doc.setTextColor('#475569');
+                lines = doc.splitTextToSize(informacionServicio, 180);
+                doc.text(lines, 14, currentY);
+                currentY += lines.length * 7 + 5;
 
-        // Servicios contratados (título)
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(16);
-        doc.setTextColor('#1e40af');
-        doc.text("Servicios contratados:", 14, currentY);
-        currentY += 10;
+                // Servicios contratados (título)
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(16);
+                doc.setTextColor('#1e40af');
+                doc.text("Servicios contratados:", 14, currentY);
+                currentY += 10;
 
-        // Definir columnas (ancho y posición X)
-        const startX = 14;
-        const columnWidths = [60, 25, 30, 30, 35]; // Ajusta anchos según necesidad
-        const headers = ["Servicio", "Cantidad", "Precio (€)", "Descuento", "Subtotal (€)"];
+                // Definir columnas (ancho y posición X)
+                const startX = 14;
+                const columnWidths = [60, 25, 30, 30, 35]; // Ajusta anchos según necesidad
+                const headers = ["Servicio", "Cantidad", "Precio (€)", "Descuento", "Subtotal (€)"];
 
-        // Dibujar encabezado con fondo degradado
-        const headerHeight = 10;
-        doc.setFillColor(224, 235, 255); // azul muy claro
-        doc.rect(startX, currentY - 7, columnWidths.reduce((a,b) => a + b, 0), headerHeight, 'F');
+                // Dibujar encabezado con fondo degradado
+                const headerHeight = 10;
+                doc.setFillColor(224, 235, 255); // azul muy claro
+                doc.rect(startX, currentY - 7, columnWidths.reduce((a, b) => a + b, 0), headerHeight, 'F');
 
-        // Texto encabezado centrado y en negrita
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(12);
-        doc.setTextColor('#2563eb'); // azul
+                // Texto encabezado centrado y en negrita
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(12);
+                doc.setTextColor('#2563eb'); // azul
 
-        let x = startX;
-        headers.forEach((header, i) => {
-            const posX = centerText(header, x, columnWidths[i], doc);
-            doc.text(header, posX, currentY);
-            x += columnWidths[i];
-        });
+                let x = startX;
+                headers.forEach((header, i) => {
+                    const posX = centerText(header, x, columnWidths[i], doc);
+                    doc.text(header, posX, currentY);
+                    x += columnWidths[i];
+                });
 
-        currentY += 7;
+                currentY += 10;
 
-        // Línea separadora debajo del encabezado
-        doc.setDrawColor(100);
-        doc.setLineWidth(0.5);
-        doc.line(startX, currentY - 2, startX + columnWidths.reduce((a,b) => a + b, 0), currentY - 2);
+                // Línea separadora debajo del encabezado
+                doc.setDrawColor(100);
+                doc.setLineWidth(0.5);
+                doc.line(startX, currentY, startX + columnWidths.reduce((a, b) => a + b, 0), currentY);
+                currentY += 5;
 
-        currentY += 3;
+                // Datos servicios con texto centrado y líneas entre filas
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(12);
+                doc.setTextColor('#334155');
 
-        // Datos servicios con texto centrado y líneas entre filas
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(12);
-        doc.setTextColor('#334155');
+                carrito.forEach(item => {
+                    const descuentoTexto = item.descuento > 0 ? item.descuento + '%' : 'No';
+                    const precioConDescuento = item.precio * (1 - item.descuento / 100);
+                    const subtotal = precioConDescuento * item.cantidad;
 
-        carrito.forEach(item => {
-            const descuentoTexto = item.descuento > 0 ? item.descuento + '%' : 'No';
-            const precioConDescuento = item.precio * (1 - item.descuento / 100);
-            const subtotal = precioConDescuento * item.cantidad;
+                    let x = startX;
 
-            let x = startX;
+                    const valores = [
+                        item.nombre,
+                        item.cantidad.toString(),
+                        formatEuroEnd(`€${item.precio.toFixed(2)}`),
+                        descuentoTexto,
+                        formatEuroEnd(`€${subtotal.toFixed(2)}`)
+                    ];
 
-            const valores = [
-                item.nombre,
-                item.cantidad.toString(),
-                formatEuroEnd(`€${item.precio.toFixed(2)}`),
-                descuentoTexto,
-                formatEuroEnd(`€${subtotal.toFixed(2)}`)
-            ];
+                    valores.forEach((valor, i) => {
+                        const posX = centerText(valor, x, columnWidths[i], doc);
+                        doc.text(valor, posX, currentY);
+                        x += columnWidths[i];
+                    });
 
-            valores.forEach((valor, i) => {
-                const posX = centerText(valor, x, columnWidths[i], doc);
-                doc.text(valor, posX, currentY);
-                x += columnWidths[i];
+                    // Línea horizontal separadora de fila
+                    doc.setDrawColor(220);
+                    doc.setLineWidth(0.3);
+                    doc.line(startX, currentY + 2, startX + columnWidths.reduce((a, b) => a + b, 0), currentY + 2);
+
+                    currentY += 15;
+                });
+
+                currentY += 10;
+
+                // Resumen final con colores y negrita para total
+                const subtotalText = document.getElementById('subtotal').textContent;
+                const descuentosText = document.getElementById('descuentos').textContent;
+                const totalText = document.getElementById('total').textContent;
+
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(12);
+                doc.setTextColor('#475569');
+                doc.text(`Subtotal: ${formatEuroEnd(subtotalText)}`, startX, currentY);
+                currentY += 7;
+                doc.text(`Descuentos: ${formatEuroEnd(descuentosText)}`, startX, currentY);
+                currentY += 10;
+
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14);
+                doc.setTextColor('#059669');
+                doc.text(`Total: ${formatEuroEnd(totalText)}`, startX, currentY);
+
+                // Guardar PDF con nombre personalizado
+                const nombreArchivo = `Oferta_${nombreCliente.replace(/\s+/g, '_')}_${fechaFormateada.replace(/\//g, '-')}.pdf`;
+                doc.save(nombreArchivo);
+
+            }).catch(err => {
+                console.error('Error cargando logo:', err);
+                alert('Error al cargar el logo. El PDF se generará sin logo.');
+
+                // Aquí repetir código para PDF sin logo
             });
-
-            // Línea horizontal separadora de fila
-            doc.setDrawColor(220);
-            doc.setLineWidth(0.3);
-            doc.line(startX, currentY + 2, startX + columnWidths.reduce((a,b) => a + b, 0), currentY + 2);
-
-            currentY += 10;
-        });
-
-        currentY += 10;
-
-        // Resumen final con colores y negrita para total
-        const subtotalText = document.getElementById('subtotal').textContent;
-        const descuentosText = document.getElementById('descuentos').textContent;
-        const totalText = document.getElementById('total').textContent;
-
-        doc.setFont('helvetica', 'normal');
-        doc.setFontSize(12);
-        doc.setTextColor('#475569');
-        doc.text(`Subtotal: ${formatEuroEnd(subtotalText)}`, startX, currentY);
-        currentY += 7;
-        doc.text(`Descuentos: ${formatEuroEnd(descuentosText)}`, startX, currentY);
-        currentY += 10;
-
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(14);
-        doc.setTextColor('#059669');
-        doc.text(`Total: ${formatEuroEnd(totalText)}`, startX, currentY);
-
-        // Guardar PDF con nombre personalizado
-        const nombreArchivo = `Oferta_${nombreCliente.replace(/\s+/g, '_')}_${fechaFormateada.replace(/\//g, '-')}.pdf`;
-        doc.save(nombreArchivo);
-
-    }).catch(err => {
-        console.error('Error cargando logo:', err);
-        alert('Error al cargar el logo. El PDF se generará sin logo.');
-
-        // Aquí repetir código para PDF sin logo
-    });
-};
+        };
 
 
 
