@@ -7,7 +7,7 @@
     <title>Calculadora de Costes con Firebase</title>
     <link rel="icon" type="image/png" href="logo.png" />
     <style>
-        /* Tu CSS completo (igual que el que enviaste) */
+        /* CSS */
         * {
             margin: 0;
             padding: 0;
@@ -1107,8 +1107,21 @@
         };
 
         window.generatePDF = function () {
+            const nombreCliente = document.getElementById('nombreCliente').value.trim();
+            const nombreProyecto = document.getElementById('nombreProyecto').value.trim();
+
+            if (!nombreCliente) {
+                alert('Por favor, ingresa el nombre del cliente antes de generar el PDF.');
+                return;
+            }
+
+            if (!nombreProyecto) {
+                alert('Por favor, ingresa el nombre del proyecto antes de generar el PDF.');
+                return;
+            }
+
             if (carrito.length === 0) {
-                alert('Añade servicios al carrito antes de generar el PDF.');
+                alert('Añade al menos un servicio al carrito antes de generar el PDF.');
                 return;
             }
 
@@ -1127,8 +1140,6 @@
             doc.setFontSize(12);
             doc.text(`Fecha: ${fechaFormateada}`, 14, 28);
 
-            const nombreCliente = document.getElementById('nombreCliente').value.trim();
-            const nombreProyecto = document.getElementById('nombreProyecto').value.trim();
             const tipoServicio = document.getElementById('tipoServicio').value;
             const alcanceOpciones = document.getElementById('alcanceOpciones').value.trim();
             const informacionServicio = document.getElementById('informacionServicio').value.trim();
@@ -1184,6 +1195,7 @@
             const nombreArchivo = `Oferta_${nombreCliente.replace(/\s+/g, '_')}_${fechaFormateada.replace(/\//g, '-')}.pdf`;
             doc.save(nombreArchivo);
         };
+
 
         window.clearAll = function () {
             if (confirm('¿Estás seguro de que quieres limpiar todo?')) {
