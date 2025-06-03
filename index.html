@@ -1232,15 +1232,14 @@
                 currentY += 10;
 
                 // Cabeceras tabla
-                // Cabeceras tabla
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(12);
                 doc.setTextColor('#2563eb'); // azul
                 doc.text("Servicio", 14, currentY);
-                doc.text("Cantidad", 75, currentY);
-                doc.text("Precio (€)", 110, currentY);
-                doc.text("Descuento", 145, currentY);
-                doc.text("Subtotal (€)", 185, currentY);
+                doc.text("Cantidad", 65, currentY);
+                doc.text("Precio (€)", 100, currentY);
+                doc.text("Descuento", 135, currentY);
+                doc.text("Subtotal (€)", 170, currentY);
                 currentY += 8;
 
                 // Datos servicios (normal)
@@ -1254,10 +1253,10 @@
                     const subtotal = precioConDescuento * item.cantidad;
 
                     doc.text(item.nombre, 14, currentY);
-                    doc.text(item.cantidad.toString(), 80, currentY);
-                    doc.text(`€${item.precio.toFixed(2)}`, 110, currentY);
-                    doc.text(descuentoTexto, 150, currentY);
-                    doc.text(`€${subtotal.toFixed(2)}`, 190, currentY);
+                    doc.text(item.cantidad.toString(), 70, currentY);
+                    doc.text(`€${item.precio.toFixed(2)}`, 100, currentY);
+                    doc.text(descuentoTexto, 135, currentY);
+                    doc.text(`€${subtotal.toFixed(2)}`, 170, currentY);
                     currentY += 7;
                 });
 
