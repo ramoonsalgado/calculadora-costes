@@ -854,8 +854,8 @@
             collection,
             addDoc,
             serverTimestamp,
-            query,    
-            orderBy,      
+            query,
+            orderBy,
             getDocs
         } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
@@ -1095,17 +1095,26 @@
                 creado: serverTimestamp()
             };
 
-
             try {
                 await addDoc(collection(db, "ofertas"), oferta);
                 alert('¡Oferta guardada exitosamente en Firebase!');
-                clearAll();
-                mostrarOfertas();  // <-- Aquí refrescamos la lista de ofertas
+
+                // Preguntar si quiere generar PDF
+                const quierePDF = confirm('¿Quieres generar un PDF de la oferta?');
+                if (quierePDF) {
+                    generatePDF();
+                }
+
+                // Borrar todo sin preguntar
+                clearAllNoConfirm();
+
+                mostrarOfertas();  // refrescamos la lista de ofertas
             } catch (error) {
                 console.error('Error guardando oferta:', error);
                 alert('Error al guardar la oferta, intenta de nuevo.');
             }
         };
+
 
 
         window.generatePDF = function () {
@@ -1195,13 +1204,26 @@
                 filterServices();
             }
         };
+        window.clearAllNoConfirm = function () {
+            document.getElementById('nombreCliente').value = '';
+            document.getElementById('nombreProyecto').value = '';
+            document.getElementById('tipoServicio').value = '';
+            document.getElementById('alcanceOpciones').value = '';
+            document.getElementById('informacionServicio').value = '';
+            carrito = [];
+
+            document.querySelectorAll('.quantity-input').forEach(input => {
+                input.value = 0;
+            });
+
+            updateCart();
+            filterServices();
+        };
 
         document.addEventListener('DOMContentLoaded', () => {
             filterServices();
             mostrarOfertas();
-        });
-    </script>
-
+        }); //Queda por hacer que el pdf se descargue con la hora a la que fue creada la oferta.
+    </script> 
 </body>
-
 </html>
