@@ -1064,47 +1064,56 @@
             }
         }
 
-        window.saveOffer = async function () {
-            const nombreCliente = document.getElementById('nombreCliente').value.trim();
-            const nombreProyecto = document.getElementById('nombreProyecto').value.trim();
-            const tipoServicio = document.getElementById('tipoServicio').value;
-            const alcanceOpciones = document.getElementById('alcanceOpciones').value.trim();
-            const informacionServicio = document.getElementById('informacionServicio').value.trim();
+      window.saveOffer = async function () {
+    const nombreCliente = document.getElementById('nombreCliente').value.trim();
+    const nombreProyecto = document.getElementById('nombreProyecto').value.trim();
+    const tipoServicio = document.getElementById('tipoServicio').value;
+    const alcanceOpciones = document.getElementById('alcanceOpciones').value.trim();
+    const informacionServicio = document.getElementById('informacionServicio').value.trim();
 
-            if (!nombreCliente || !nombreProyecto || !tipoServicio || carrito.length === 0) {
-                alert('Por favor, completa todos los campos obligatorios y añade al menos un servicio al carrito.');
-                return;
-            }
+    if (!nombreCliente || !nombreProyecto || !tipoServicio || carrito.length === 0) {
+        alert('Por favor, completa todos los campos obligatorios y añade al menos un servicio al carrito.');
+        return;
+    }
 
-            const oferta = {
-                nombreCliente,
-                nombreProyecto,
-                tipoServicio,
-                alcanceOpciones,
-                informacionServicio,
-                carritoServicio: carrito,
-                costeTotal: document.getElementById('total').textContent,
-                estado: 'Pendiente',
-                propietario: 'Usuario Actual',
-                creado: serverTimestamp()
-            };
+    const oferta = {
+        nombreCliente,
+        nombreProyecto,
+        tipoServicio,
+        alcanceOpciones,
+        informacionServicio,
+        carritoServicio: carrito,
+        costeTotal: document.getElementById('total').textContent,
+        estado: 'Pendiente',
+        propietario: 'Usuario Actual',
+        creado: serverTimestamp()
+    };
 
-            try {
-                await addDoc(collection(db, "ofertas"), oferta);
-                alert('¡Oferta guardada exitosamente en Firebase!');
+    try {
+        await addDoc(collection(db, "ofertas"), oferta);
+        alert('¡Oferta guardada exitosamente en Firebase!');
 
-                const quierePDF = confirm('¿Quieres generar un PDF de la oferta?');
-                if (quierePDF) {
-                    generatePDF();
-                }
+        const quierePDF = confirm('¿Quieres generar un PDF de la oferta?');
+        if (quierePDF) {
+            // Generar PDF primero
+            generatePDF();
 
+            // Esperar un poco para asegurar que generatePDF termine antes de limpiar
+            setTimeout(() => {
                 clearAllNoConfirm();
                 mostrarOfertas();
-            } catch (error) {
-                console.error('Error guardando oferta:', error);
-                alert('Error al guardar la oferta, intenta de nuevo.');
-            }
-        };
+            }, 500); // 0.5 segundos de espera
+        } else {
+            // Si no quiere PDF, limpiar inmediatamente
+            clearAllNoConfirm();
+            mostrarOfertas();
+        }
+    } catch (error) {
+        console.error('Error guardando oferta:', error);
+        alert('Error al guardar la oferta, intenta de nuevo.');
+    }
+};
+
         function getBase64ImageFromUrl(imageUrl) {
             return new Promise((resolve, reject) => {
                 var img = new Image();
