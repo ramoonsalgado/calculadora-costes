@@ -7,6 +7,7 @@
     <title>Calculadora de Costes con Firebase</title>
     <link rel="icon" type="image/png" href="logo.png" />
     <style>
+        /* Tu CSS completo (igual que el que enviaste) */
         * {
             margin: 0;
             padding: 0;
@@ -184,7 +185,7 @@
             border-radius: 12px;
             background: white;
             transition: all 0.3s ease;
-            cursor: pointer;
+            cursor: default;
             position: relative;
             overflow: hidden;
         }
@@ -299,13 +300,11 @@
             box-shadow: 0 8px 32px rgba(14, 165, 233, 0.1);
             transition: all 0.3s ease;
             position: relative;
-            /* Para separar del carrito */
             margin-top: 20px;
         }
 
         .summary-section {
             grid-column: 2;
-            /* segunda columna */
             margin-top: 0px;
         }
 
@@ -319,7 +318,6 @@
         }
 
         .summary-item {
-            /* Quitamos border-bottom para que no choque con el siguiente */
             border-bottom: none;
             padding: 12px 0;
             display: flex;
@@ -345,14 +343,11 @@
             margin-top: 15px;
             padding: 20px 25px;
             border-top: none;
-            /* quitamos border-top para que no curve */
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
             border-radius: 0 0 16px 16px;
-            /* bordes redondeados solo abajo */
         }
 
         .cart-section {
-            /* Ahora en la columna izq */
             grid-column: 1;
         }
 
@@ -771,7 +766,7 @@
         </div>
 
         <div class="main-content">
-            <!-- Información del Proyecto (columna izquierda arriba) -->
+            <!-- Información del Proyecto -->
             <div class="form-section">
                 <h2>📋 Información del Proyecto</h2>
                 <div class="form-group">
@@ -802,7 +797,7 @@
                 </div>
             </div>
 
-            <!-- Catálogo de Servicios (columna izquierda debajo) -->
+            <!-- Catálogo de Servicios -->
             <div class="form-section">
                 <h2>🛍️ Catálogo de Servicios</h2>
                 <div id="serviceSelector" class="service-selector">
@@ -810,7 +805,7 @@
                 </div>
             </div>
 
-            <!-- Carrito de Servicios (columna derecha arriba) -->
+            <!-- Carrito de Servicios -->
             <div class="cart-section">
                 <h2>🛒 Carrito de Servicios</h2>
                 <table class="cart-table">
@@ -834,7 +829,7 @@
                 </table>
             </div>
 
-            <!-- Resumen de Costes (columna derecha debajo) -->
+            <!-- Resumen de Costes -->
             <div class="summary-section">
                 <h2>💰 Resumen de Costes</h2>
                 <div class="summary-item">
@@ -851,7 +846,7 @@
                 </div>
             </div>
 
-            <!-- Ofertas Guardadas (en toda la anchura) -->
+            <!-- Ofertas Guardadas -->
             <div class="form-section" style="grid-column: 1 / -1;">
                 <h2>📂 Ofertas Guardadas</h2>
                 <div id="contenedorOfertas">
@@ -866,6 +861,7 @@
             <button class="btn btn-secondary" onclick="clearAll()">🗑️ Limpiar Todo</button>
         </div>
     </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
@@ -879,7 +875,6 @@
             getDocs
         } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
-        // Configuración Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyAgFEpvwxe_P5w1JTmrF-IcZ0jWh2j76M4",
             authDomain: "calculadoracostesfinal.firebaseapp.com",
@@ -889,17 +884,8 @@
             appId: "1:951863061701:web:784ce3733c6b08518d14ac"
         };
 
-        // Inicializa Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
-        // Datos para simular SharePoint
-        const tiposServicio = [
-            { id: 'desarrollo', nombre: 'Desarrollo Web' },
-            { id: 'diseno', nombre: 'Diseño Gráfico' },
-            { id: 'marketing', nombre: 'Marketing Digital' },
-            { id: 'consultoria', nombre: 'Consultoría' }
-        ];
 
         const productos = [
             { id: 1, nombre: 'Sitio Web Básico', tipo: 'desarrollo', precio: 800, descuento: 0, activo: true },
@@ -915,7 +901,6 @@
 
         let carrito = [];
 
-        // Funciones expuestas en window para acceso desde HTML
         window.filterServices = function () {
             const tipoSeleccionado = document.getElementById('tipoServicio').value;
             const serviceSelector = document.getElementById('serviceSelector');
@@ -933,44 +918,32 @@
             }
 
             serviceSelector.innerHTML = serviciosFiltrados.map(servicio => `
-    <div class="service-item" onclick="toggleService(${servicio.id})">
-        <div class="service-info">
-            <div class="service-name">${servicio.nombre}</div>
-            <div class="service-price">
-                €${servicio.precio.toFixed(2)}
-                ${servicio.descuento > 0 ? `<span class="service-discount">-${servicio.descuento}%</span>` : ''}
-            </div>
-        </div>
-        <div class="quantity-control">
-            <button class="quantity-btn" onclick="increment(event, ${servicio.id}, -1)">-</button>
-            <input type="number" class="quantity-input" value="0" min="0" id="qty-${servicio.id}" onchange="updateQuantity(${servicio.id})" />
-            <button class="quantity-btn" onclick="increment(event, ${servicio.id}, 1)">+</button>
-        </div>
-    </div>
-`).join('');
-
+                <div class="service-item">
+                    <div class="service-info">
+                        <div class="service-name">${servicio.nombre}</div>
+                        <div class="service-price">
+                            €${servicio.precio.toFixed(2)}
+                            ${servicio.descuento > 0 ? `<span class="service-discount">-${servicio.descuento}%</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="quantity-control">
+                        <button class="quantity-btn" onclick="increment(event, ${servicio.id}, -1)">-</button>
+                        <input type="number" class="quantity-input" value="0" min="0" id="qty-${servicio.id}" onchange="updateQuantity(${servicio.id})" />
+                        <button class="quantity-btn" onclick="increment(event, ${servicio.id}, 1)">+</button>
+                    </div>
+                </div>
+            `).join('');
         };
 
-        window.toggleService = function (servicioId) {
-            const qtyInput = document.getElementById(`qty-${servicioId}`);
-            const currentQty = parseInt(qtyInput.value);
-
-            if (currentQty === 0) {
-                qtyInput.value = 1;
-                changeQuantity(servicioId, 1);
-            }
-        };
         window.increment = function (event, servicioId, delta) {
             event.stopPropagation();
             changeQuantity(servicioId, delta);
         };
 
-
         window.changeQuantity = function (servicioId, delta) {
             const qtyInput = document.getElementById(`qty-${servicioId}`);
             const currentQty = parseInt(qtyInput.value);
             const newQty = Math.max(0, currentQty + delta);
-
             qtyInput.value = newQty;
             updateQuantity(servicioId);
         };
@@ -1039,8 +1012,6 @@
             carrito.forEach(item => {
                 const precioOriginal = item.precio * item.cantidad;
                 const descuentoAplicado = precioOriginal * (item.descuento / 100);
-                const precioConDescuento = precioOriginal - descuentoAplicado;
-
                 subtotal += precioOriginal;
                 totalDescuentos += descuentoAplicado;
             });
@@ -1051,7 +1022,7 @@
             document.getElementById('descuentos').textContent = `€${totalDescuentos.toFixed(2)}`;
             document.getElementById('total').textContent = `€${total.toFixed(2)}`;
         }
-        // Función para mostrar ofertas guardadas
+
         async function mostrarOfertas() {
             const contenedor = document.getElementById("contenedorOfertas");
             contenedor.innerHTML = '<p style="color:#6b7280; text-align:center; padding: 20px;">Cargando ofertas...</p>';
@@ -1070,22 +1041,21 @@
                     const data = doc.data();
                     const fecha = data.creado?.toDate?.().toLocaleString() || 'Fecha no disponible';
 
-                    // ponemos clase CSS segun el estado del proyecto
                     let estadoClass = '';
                     if (data.estado === 'Aprobado') estadoClass = 'estado-aprobado';
                     else if (data.estado === 'Pendiente') estadoClass = 'estado-pendiente';
                     else if (data.estado === 'Rechazado') estadoClass = 'estado-rechazado';
 
                     const ofertaHTML = `
-                <div class="oferta">
-                    <h3>Cliente: ${data.nombreCliente}</h3>
-                    <p><strong>Proyecto:</strong> ${data.nombreProyecto}</p>
-                    <p><strong>Tipo de Servicio:</strong> ${data.tipoServicio}</p>
-                    <p><strong>Coste Total:</strong> ${data.costeTotal}</p>
-                    <p><small>Guardada: ${fecha}</small></p>
-                    <p class="estado ${estadoClass}"><strong>Estado:</strong> ${data.estado}</p>
-                </div>
-            `;
+                        <div class="oferta">
+                            <h3>Cliente: ${data.nombreCliente}</h3>
+                            <p><strong>Proyecto:</strong> ${data.nombreProyecto}</p>
+                            <p><strong>Tipo de Servicio:</strong> ${data.tipoServicio}</p>
+                            <p><strong>Coste Total:</strong> ${data.costeTotal}</p>
+                            <p><small>Guardada: ${fecha}</small></p>
+                            <p class="estado ${estadoClass}"><strong>Estado:</strong> ${data.estado}</p>
+                        </div>
+                    `;
                     contenedor.innerHTML += ofertaHTML;
                 });
             } catch (error) {
@@ -1093,8 +1063,6 @@
                 contenedor.innerHTML = '<p style="color:red; text-align:center; padding: 20px;">Error cargando ofertas.</p>';
             }
         }
-
-
 
         window.saveOffer = async function () {
             const nombreCliente = document.getElementById('nombreCliente').value.trim();
@@ -1116,7 +1084,7 @@
                 informacionServicio,
                 carritoServicio: carrito,
                 costeTotal: document.getElementById('total').textContent,
-                estado: 'Pendiente', // Siempre pendiente al crear
+                estado: 'Pendiente',
                 propietario: 'Usuario Actual',
                 creado: serverTimestamp()
             };
@@ -1125,23 +1093,18 @@
                 await addDoc(collection(db, "ofertas"), oferta);
                 alert('¡Oferta guardada exitosamente en Firebase!');
 
-                // Preguntar si quiere generar PDF
                 const quierePDF = confirm('¿Quieres generar un PDF de la oferta?');
                 if (quierePDF) {
                     generatePDF();
                 }
 
-                // Borrar todo sin preguntar
                 clearAllNoConfirm();
-
-                mostrarOfertas(); // refrescamos la lista de ofertas
+                mostrarOfertas();
             } catch (error) {
                 console.error('Error guardando oferta:', error);
                 alert('Error al guardar la oferta, intenta de nuevo.');
             }
         };
-
-
 
         window.generatePDF = function () {
             if (carrito.length === 0) {
@@ -1152,17 +1115,15 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
-            // Obtener fecha actual en formato dd/mm/yyyy
             const fechaActual = new Date();
             const dia = String(fechaActual.getDate()).padStart(2, '0');
-            const mes = String(fechaActual.getMonth() + 1).padStart(2, '0'); // Enero = 0
+            const mes = String(fechaActual.getMonth() + 1).padStart(2, '0');
             const año = fechaActual.getFullYear();
             const fechaFormateada = `${dia}/${mes}/${año}`;
 
             doc.setFontSize(18);
             doc.text("Oferta de Servicios", 14, 20);
 
-            // Añadir la fecha debajo del título
             doc.setFontSize(12);
             doc.text(`Fecha: ${fechaFormateada}`, 14, 28);
 
@@ -1220,11 +1181,9 @@
             doc.setFontSize(14);
             doc.text(`Total: ${totalText}`, 14, yPos);
 
-            // Guardar el PDF con nombre que incluya cliente y fecha (slashes reemplazados por guiones)
             const nombreArchivo = `Oferta_${nombreCliente.replace(/\s+/g, '_')}_${fechaFormateada.replace(/\//g, '-')}.pdf`;
             doc.save(nombreArchivo);
         };
-
 
         window.clearAll = function () {
             if (confirm('¿Estás seguro de que quieres limpiar todo?')) {
@@ -1243,6 +1202,7 @@
                 filterServices();
             }
         };
+
         window.clearAllNoConfirm = function () {
             document.getElementById('nombreCliente').value = '';
             document.getElementById('nombreProyecto').value = '';
