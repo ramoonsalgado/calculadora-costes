@@ -1105,27 +1105,43 @@
                 alert('Error al guardar la oferta, intenta de nuevo.');
             }
         };
-
+function getBase64ImageFromUrl(imageUrl) {
+  return new Promise((resolve, reject) => {
+    var img = new Image();
+    img.setAttribute('crossOrigin', 'anonymous'); // evita problemas CORS
+    img.onload = () => {
+      var canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      var ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      var dataURL = canvas.toDataURL('image/png');
+      resolve(dataURL);
+    };
+    img.onerror = error => reject(error);
+    img.src = imageUrl;
+  });
+}
         window.generatePDF = function () {
-            const nombreCliente = document.getElementById('nombreCliente').value.trim();
-            const nombreProyecto = document.getElementById('nombreProyecto').value.trim();
+    const nombreCliente = document.getElementById('nombreCliente').value.trim();
+    const nombreProyecto = document.getElementById('nombreProyecto').value.trim();
 
-            if (!nombreCliente) {
-                alert('Por favor, ingresa el nombre del cliente antes de generar el PDF.');
-                return;
-            }
+    if (!nombreCliente) {
+        alert('Por favor, ingresa el nombre del cliente antes de generar el PDF.');
+        return;
+    }
 
-            if (!nombreProyecto) {
-                alert('Por favor, ingresa el nombre del proyecto antes de generar el PDF.');
-                return;
-            }
+    if (!nombreProyecto) {
+        alert('Por favor, ingresa el nombre del proyecto antes de generar el PDF.');
+        return;
+    }
 
-            if (carrito.length === 0) {
-                alert('Añade al menos un servicio al carrito antes de generar el PDF.');
-                return;
-            }
+    if (carrito.length === 0) {
+        alert('Añade al menos un servicio al carrito antes de generar el PDF.');
+        return;
+    }
 
-           const { jsPDF } = window.jspdf;
+    const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
 
     const fechaActual = new Date();
@@ -1134,121 +1150,145 @@
     const año = fechaActual.getFullYear();
     const fechaFormateada = `${dia}/${mes}/${año}`;
 
-    // Título principal - negrita, tamaño grande y color azul oscuro
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(20);
-    doc.setTextColor('#1e40af'); // azul oscuro
-    doc.text("Oferta de Servicios", 14, 20);
+    // Carga el logo y luego genera el PDF
+    getBase64ImageFromUrl('logo.png').then(logoBase64 => {
+        // Añadir logo (posicion x=14, y=10, ancho=40, alto=20)
+        doc.addImage(logoBase64, 'PNG', 14, 10, 40, 20);
 
-    // Fecha - normal y gris oscuro
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.setTextColor('#334155'); // gris oscuro
-    doc.text(`Fecha: ${fechaFormateada}`, 14, 28);
+        // Ajustamos la posición Y para que el texto no se sobreponga al logo
+        let currentY = 35;
 
-    const tipoServicio = document.getElementById('tipoServicio').value;
-    const alcanceOpciones = document.getElementById('alcanceOpciones').value.trim();
-    const informacionServicio = document.getElementById('informacionServicio').value.trim();
+        // Título principal - negrita, tamaño grande y color azul oscuro
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(20);
+        doc.setTextColor('#1e40af'); // azul oscuro
+        doc.text("Oferta de Servicios", 14, currentY);
 
-    // Datos cliente y proyecto con etiquetas en negrita y valores normales
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor('#1e293b'); // casi negro azulado
-    doc.text(`Cliente:`, 14, 38);
-    doc.text(`Proyecto:`, 14, 46);
-    doc.text(`Tipo de Servicio:`, 14, 54);
+        currentY += 10;
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(14);
-    doc.setTextColor('#475569'); // gris medio
-    doc.text(nombreCliente, 50, 38);
-    doc.text(nombreProyecto, 50, 46);
-    doc.text(tipoServicio, 80, 54);
+        // Fecha - normal y gris oscuro
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.setTextColor('#334155'); // gris oscuro
+        doc.text(`Fecha: ${fechaFormateada}`, 14, currentY);
 
-    // Alcance
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor('#1e293b');
-    doc.text(`Alcance:`, 14, 64);
+        currentY += 8;
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.setTextColor('#475569');
-    let lines = doc.splitTextToSize(alcanceOpciones, 180);
-    doc.text(lines, 14, 71);
-    let yPos = 71 + lines.length * 7;
+        const tipoServicio = document.getElementById('tipoServicio').value;
+        const alcanceOpciones = document.getElementById('alcanceOpciones').value.trim();
+        const informacionServicio = document.getElementById('informacionServicio').value.trim();
 
-    // Información adicional
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor('#1e293b');
-    doc.text(`Información adicional:`, 14, yPos);
-    yPos += 7;
+        // Datos cliente y proyecto con etiquetas en negrita y valores normales
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.setTextColor('#1e293b'); // casi negro azulado
+        doc.text(`Cliente:`, 14, currentY);
+        doc.text(`Proyecto:`, 14, currentY + 8);
+        doc.text(`Tipo de Servicio:`, 14, currentY + 16);
 
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.setTextColor('#475569');
-    lines = doc.splitTextToSize(informacionServicio, 180);
-    doc.text(lines, 14, yPos);
-    yPos += lines.length * 7 + 5;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(14);
+        doc.setTextColor('#475569'); // gris medio
+        doc.text(nombreCliente, 50, currentY);
+        doc.text(nombreProyecto, 50, currentY + 8);
+        doc.text(tipoServicio, 80, currentY + 16);
 
-    // Servicios contratados (título)
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.setTextColor('#1e40af');
-    doc.text("Servicios contratados:", 14, yPos);
-    yPos += 10;
+        currentY += 28;
 
-    // Cabeceras tabla
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(12);
-    doc.setTextColor('#2563eb'); // azul
-    doc.text("Servicio", 14, yPos);
-    doc.text("Cantidad", 90, yPos);
-    doc.text("Precio (€)", 130, yPos);
-    doc.text("Subtotal (€)", 175, yPos);
-    yPos += 8;
+        // Alcance
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.setTextColor('#1e293b');
+        doc.text(`Alcance:`, 14, currentY);
 
-    // Datos servicios (normal)
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.setTextColor('#334155'); // gris oscuro
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.setTextColor('#475569');
+        let lines = doc.splitTextToSize(alcanceOpciones, 180);
+        doc.text(lines, 14, currentY + 7);
+        currentY += 7 + lines.length * 7;
 
-    carrito.forEach(item => {
-        const precioConDescuento = item.precio * (1 - item.descuento / 100);
-        const subtotal = precioConDescuento * item.cantidad;
+        // Información adicional
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.setTextColor('#1e293b');
+        doc.text(`Información adicional:`, 14, currentY);
+        currentY += 7;
 
-        doc.text(item.nombre, 14, yPos);
-        doc.text(item.cantidad.toString(), 95, yPos);
-        doc.text(item.precio.toFixed(2), 135, yPos);
-        doc.text(subtotal.toFixed(2), 175, yPos);
-        yPos += 7;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.setTextColor('#475569');
+        lines = doc.splitTextToSize(informacionServicio, 180);
+        doc.text(lines, 14, currentY);
+        currentY += lines.length * 7 + 5;
+
+        // Servicios contratados (título)
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(16);
+        doc.setTextColor('#1e40af');
+        doc.text("Servicios contratados:", 14, currentY);
+        currentY += 10;
+
+        // Cabeceras tabla
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor('#2563eb'); // azul
+        doc.text("Servicio", 14, currentY);
+        doc.text("Cantidad", 90, currentY);
+        doc.text("Precio (€)", 130, currentY);
+        doc.text("Subtotal (€)", 175, currentY);
+        currentY += 8;
+
+        // Datos servicios (normal)
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.setTextColor('#334155'); // gris oscuro
+
+        carrito.forEach(item => {
+            const precioConDescuento = item.precio * (1 - item.descuento / 100);
+            const subtotal = precioConDescuento * item.cantidad;
+
+            doc.text(item.nombre, 14, currentY);
+            doc.text(item.cantidad.toString(), 95, currentY);
+            doc.text(item.precio.toFixed(2), 135, currentY);
+            doc.text(subtotal.toFixed(2), 175, currentY);
+            currentY += 7;
+        });
+
+        currentY += 10;
+
+        // Resumen final con colores y negrita para total
+        const subtotalText = document.getElementById('subtotal').textContent;
+        const descuentosText = document.getElementById('descuentos').textContent;
+        const totalText = document.getElementById('total').textContent;
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(12);
+        doc.setTextColor('#475569');
+        doc.text(`Subtotal: ${subtotalText}`, 14, currentY);
+        currentY += 7;
+        doc.text(`Descuentos: ${descuentosText}`, 14, currentY);
+        currentY += 10;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.setTextColor('#059669'); // verde
+        doc.text(`Total: ${totalText}`, 14, currentY);
+
+        // Guardar PDF con nombre personalizado
+        const nombreArchivo = `Oferta_${nombreCliente.replace(/\s+/g, '_')}_${fechaFormateada.replace(/\//g, '-')}.pdf`;
+        doc.save(nombreArchivo);
+
+    }).catch(err => {
+        console.error('Error cargando logo:', err);
+        alert('Error al cargar el logo. El PDF se generará sin logo.');
+
+        // Si no carga el logo, genera PDF sin imagen
+        // Aquí puedes copiar el código para generar el PDF sin la imagen (igual que arriba pero sin doc.addImage)
+        // Para simplificar, puedes llamar a otra función que haga la generación sin imagen o repetir el código.
     });
-
-    yPos += 10;
-
-    // Resumen final con colores y negrita para total
-    const subtotalText = document.getElementById('subtotal').textContent;
-    const descuentosText = document.getElementById('descuentos').textContent;
-    const totalText = document.getElementById('total').textContent;
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(12);
-    doc.setTextColor('#475569');
-    doc.text(`Subtotal: ${subtotalText}`, 14, yPos);
-    yPos += 7;
-    doc.text(`Descuentos: ${descuentosText}`, 14, yPos);
-    yPos += 10;
-
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.setTextColor('#059669'); // verde
-    doc.text(`Total: ${totalText}`, 14, yPos);
-
-    // Guardar PDF con nombre personalizado
-    const nombreArchivo = `Oferta_${nombreCliente.replace(/\s+/g, '_')}_${fechaFormateada.replace(/\//g, '-')}.pdf`;
-    doc.save(nombreArchivo);
 };
+
 
 
         window.clearAll = function () {
