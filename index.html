@@ -1126,8 +1126,19 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
+            // Obtener fecha actual en formato dd/mm/yyyy
+            const fechaActual = new Date();
+            const dia = String(fechaActual.getDate()).padStart(2, '0');
+            const mes = String(fechaActual.getMonth() + 1).padStart(2, '0'); // Enero = 0
+            const año = fechaActual.getFullYear();
+            const fechaFormateada = `${dia}/${mes}/${año}`;
+
             doc.setFontSize(18);
             doc.text("Oferta de Servicios", 14, 20);
+
+            // Añadir la fecha debajo del título
+            doc.setFontSize(12);
+            doc.text(`Fecha: ${fechaFormateada}`, 14, 28);
 
             const nombreCliente = document.getElementById('nombreCliente').value.trim();
             const nombreProyecto = document.getElementById('nombreProyecto').value.trim();
@@ -1135,13 +1146,12 @@
             const alcanceOpciones = document.getElementById('alcanceOpciones').value.trim();
             const informacionServicio = document.getElementById('informacionServicio').value.trim();
 
-            doc.setFontSize(12);
-            doc.text(`Cliente: ${nombreCliente}`, 14, 30);
-            doc.text(`Proyecto: ${nombreProyecto}`, 14, 37);
-            doc.text(`Tipo de Servicio: ${tipoServicio}`, 14, 44);
-            doc.text(`Alcance:`, 14, 51);
-            doc.text(doc.splitTextToSize(alcanceOpciones, 180), 14, 58);
-            let yPos = 58 + doc.splitTextToSize(alcanceOpciones, 180).length * 7;
+            doc.text(`Cliente: ${nombreCliente}`, 14, 38);
+            doc.text(`Proyecto: ${nombreProyecto}`, 14, 45);
+            doc.text(`Tipo de Servicio: ${tipoServicio}`, 14, 52);
+            doc.text(`Alcance:`, 14, 59);
+            doc.text(doc.splitTextToSize(alcanceOpciones, 180), 14, 66);
+            let yPos = 66 + doc.splitTextToSize(alcanceOpciones, 180).length * 7;
 
             doc.text(`Información adicional:`, 14, yPos);
             yPos += 7;
@@ -1184,8 +1194,11 @@
             doc.setFontSize(14);
             doc.text(`Total: ${totalText}`, 14, yPos);
 
-            doc.save(`Oferta_${nombreCliente.replace(/\s+/g, '_')}.pdf`);
+            // Guardar el PDF con nombre que incluya cliente y fecha (slashes reemplazados por guiones)
+            const nombreArchivo = `Oferta_${nombreCliente.replace(/\s+/g, '_')}_${fechaFormateada.replace(/\//g, '-')}.pdf`;
+            doc.save(nombreArchivo);
         };
+
 
         window.clearAll = function () {
             if (confirm('¿Estás seguro de que quieres limpiar todo?')) {
@@ -1224,6 +1237,7 @@
             filterServices();
             mostrarOfertas();
         }); //Queda por hacer que el pdf se descargue con la hora a la que fue creada la oferta.
-    </script> 
+    </script>
 </body>
+
 </html>
