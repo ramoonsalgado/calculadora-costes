@@ -299,6 +299,8 @@
             box-shadow: 0 8px 32px rgba(14, 165, 233, 0.1);
             transition: all 0.3s ease;
             position: relative;
+            /* Para separar del carrito */
+            margin-top: 20px;
         }
 
         .summary-section::before {
@@ -344,8 +346,9 @@
         }
 
         .cart-section {
-            grid-column: 1 / -1;
-            margin-top: 20px;
+            /* Ahora en la columna derecha */
+            grid-column: 2;
+            margin-bottom: 20px;
         }
 
         .cart-table {
@@ -627,6 +630,12 @@
                 gap: 20px;
                 padding: 20px;
             }
+
+            .cart-section,
+            .summary-section {
+                grid-column: auto !important;
+                margin-top: 0 !important;
+            }
         }
 
         @media (max-width: 768px) {
@@ -757,6 +766,7 @@
         </div>
 
         <div class="main-content">
+            <!-- Información del Proyecto (columna izquierda arriba) -->
             <div class="form-section">
                 <h2>📋 Información del Proyecto</h2>
                 <div class="form-group">
@@ -787,22 +797,7 @@
                 </div>
             </div>
 
-            <div class="summary-section">
-                <h2>💰 Resumen de Costes</h2>
-                <div class="summary-item">
-                    <span>Subtotal:</span>
-                    <span id="subtotal">€0.00</span>
-                </div>
-                <div class="summary-item">
-                    <span>Descuentos:</span>
-                    <span id="descuentos">€0.00</span>
-                </div>
-                <div class="summary-item">
-                    <span>Total:</span>
-                    <span id="total">€0.00</span>
-                </div>
-            </div>
-
+            <!-- Catálogo de Servicios (columna izquierda debajo) -->
             <div class="form-section">
                 <h2>🛍️ Catálogo de Servicios</h2>
                 <div id="serviceSelector" class="service-selector">
@@ -810,6 +805,7 @@
                 </div>
             </div>
 
+            <!-- Carrito de Servicios (columna derecha arriba) -->
             <div class="cart-section">
                 <h2>🛒 Carrito de Servicios</h2>
                 <table class="cart-table">
@@ -832,6 +828,25 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Resumen de Costes (columna derecha debajo) -->
+            <div class="summary-section">
+                <h2>💰 Resumen de Costes</h2>
+                <div class="summary-item">
+                    <span>Subtotal:</span>
+                    <span id="subtotal">€0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Descuentos:</span>
+                    <span id="descuentos">€0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Total:</span>
+                    <span id="total">€0.00</span>
+                </div>
+            </div>
+
+            <!-- Ofertas Guardadas (en toda la anchura) -->
             <div class="form-section" style="grid-column: 1 / -1;">
                 <h2>📂 Ofertas Guardadas</h2>
                 <div id="contenedorOfertas">
@@ -1108,7 +1123,7 @@
                 // Borrar todo sin preguntar
                 clearAllNoConfirm();
 
-                mostrarOfertas();  // refrescamos la lista de ofertas
+                mostrarOfertas(); // refrescamos la lista de ofertas
             } catch (error) {
                 console.error('Error guardando oferta:', error);
                 alert('Error al guardar la oferta, intenta de nuevo.');
@@ -1236,7 +1251,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             filterServices();
             mostrarOfertas();
-        }); //Queda por hacer que el pdf se descargue con la hora a la que fue creada la oferta.
+        });
     </script>
 </body>
 
