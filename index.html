@@ -302,11 +302,12 @@
             /* Para separar del carrito */
             margin-top: 20px;
         }
-        
-.summary-section {
-  grid-column: 2; /* segunda columna */
-  margin-top: 0px;
-}
+
+        .summary-section {
+            grid-column: 2;
+            /* segunda columna */
+            margin-top: 0px;
+        }
 
         .summary-section::before {
             content: none;
@@ -932,21 +933,22 @@
             }
 
             serviceSelector.innerHTML = serviciosFiltrados.map(servicio => `
-                <div class="service-item" onclick="toggleService(${servicio.id})">
-                    <div class="service-info">
-                        <div class="service-name">${servicio.nombre}</div>
-                        <div class="service-price">
-                            €${servicio.precio.toFixed(2)}
-                            ${servicio.descuento > 0 ? `<span class="service-discount">-${servicio.descuento}%</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="quantity-control">
-                        <button class="quantity-btn" onclick="event.stopPropagation(); changeQuantity(${servicio.id}, -1)">-</button>
-                        <input type="number" class="quantity-input" value="0" min="0" id="qty-${servicio.id}" onchange="updateQuantity(${servicio.id})" />
-                        <button class="quantity-btn" onclick="event.stopPropagation(); changeQuantity(${servicio.id}, 1)">+</button>
-                    </div>
-                </div>
-            `).join('');
+    <div class="service-item" onclick="toggleService(${servicio.id})">
+        <div class="service-info">
+            <div class="service-name">${servicio.nombre}</div>
+            <div class="service-price">
+                €${servicio.precio.toFixed(2)}
+                ${servicio.descuento > 0 ? `<span class="service-discount">-${servicio.descuento}%</span>` : ''}
+            </div>
+        </div>
+        <div class="quantity-control">
+            <button class="quantity-btn" onclick="increment(event, ${servicio.id}, -1)">-</button>
+            <input type="number" class="quantity-input" value="0" min="0" id="qty-${servicio.id}" onchange="updateQuantity(${servicio.id})" />
+            <button class="quantity-btn" onclick="increment(event, ${servicio.id}, 1)">+</button>
+        </div>
+    </div>
+`).join('');
+
         };
 
         window.toggleService = function (servicioId) {
@@ -958,6 +960,11 @@
                 changeQuantity(servicioId, 1);
             }
         };
+        window.increment = function (event, servicioId, delta) {
+            event.stopPropagation();
+            changeQuantity(servicioId, delta);
+        };
+
 
         window.changeQuantity = function (servicioId, delta) {
             const qtyInput = document.getElementById(`qty-${servicioId}`);
