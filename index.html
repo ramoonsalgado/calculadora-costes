@@ -1268,7 +1268,7 @@
         // Línea separadora debajo del encabezado
         doc.setDrawColor(100);
         doc.setLineWidth(0.5);
-        doc.line(startX, currentY, startX + columnWidths.reduce((a,b) => a + b, 0), currentY);
+        doc.line(startX, currentY - 2, startX + columnWidths.reduce((a,b) => a + b, 0), currentY - 2);
 
         currentY += 3;
 
