@@ -689,24 +689,34 @@
             try {
                 await updateDoc(ofertaRef, { estado: nuevoEstado });
 
+                // Determinar palabra correcta en femenino o masculino
+                let estadoTexto = '';
+                if (nuevoEstado === 'Aprobado') {
+                    estadoTexto = 'aprobada';
+                } else if (nuevoEstado === 'Rechazado') {
+                    estadoTexto = 'rechazada';
+                } else {
+                    estadoTexto = nuevoEstado.toLowerCase();
+                }
+
                 // Crear notificación personalizada
                 const notification = document.createElement('div');
                 notification.style.cssText = `
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: ${nuevoEstado === 'Aprobado' ? '#10b981' : '#ef4444'};
-                    color: white;
-                    padding: 1rem 1.5rem;
-                    border-radius: 12px;
-                    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-                    z-index: 1000;
-                    animation: slideIn 0.3s ease;
-                `;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${nuevoEstado === 'Aprobado' ? '#10b981' : '#ef4444'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+        `;
                 notification.innerHTML = `
-                    <strong>${nuevoEstado === 'Aprobado' ? '✅' : '❌'} Oferta ${nuevoEstado.toLowerCase()}</strong>
-                    <p style="margin-top: 0.25rem; font-size: 0.9rem; opacity: 0.9;">El estado se ha actualizado correctamente</p>
-                `;
+            <strong>${nuevoEstado === 'Aprobado' ? '✅' : '❌'} Oferta ${estadoTexto}</strong>
+            <p style="margin-top: 0.25rem; font-size: 0.9rem; opacity: 0.9;">El estado se ha actualizado correctamente</p>
+        `;
 
                 document.body.appendChild(notification);
                 setTimeout(() => notification.remove(), 3000);
@@ -717,6 +727,7 @@
                 console.error(error);
             }
         }
+
 
         async function buscarOfertas() {
             const clienteFiltro = document.getElementById('busquedaCliente').value.trim().toLowerCase();
