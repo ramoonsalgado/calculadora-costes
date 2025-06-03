@@ -1300,9 +1300,9 @@
                     // Línea horizontal separadora de fila
                     doc.setDrawColor(220);
                     doc.setLineWidth(0.3);
-                    doc.line(startX, currentY + 2, startX + columnWidths.reduce((a, b) => a + b, 0), currentY + 2);
+                    doc.line(startX, currentY - 4, startX + columnWidths.reduce((a, b) => a + b, 0), currentY - 4);
 
-                    currentY += 15;
+                    currentY += 10;
                 });
 
                 currentY += 10;
