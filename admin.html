@@ -625,10 +625,10 @@
                 return `
                                 <tr>
                                     <td><strong>${item.nombre}</strong></td>
-                                    <td>${item.precio.toFixed(2)}€</td>
+                                    <td>${item.precio.toFixed(2)} &#8364;</td>
                                     <td>${item.cantidad}</td>
                                     <td>${item.descuento > 0 ? item.descuento + '%' : 'Sin descuento'}</td>
-                                    <td><strong>${subtotal.toFixed(2)}€</strong></td>
+                                    <td><strong>${subtotal.toFixed(2)} &#8364;</strong></td>
                                 </tr>
                             `;
             }).join('')}
