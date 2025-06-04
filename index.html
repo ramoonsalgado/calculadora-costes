@@ -834,15 +834,15 @@
                 <h2>💰 Resumen de Costes</h2>
                 <div class="summary-item">
                     <span>Subtotal:</span>
-                    <span id="subtotal">€0.00</span>
+                    <span id="subtotal">0.00€</span>
                 </div>
                 <div class="summary-item">
                     <span>Descuentos:</span>
-                    <span id="descuentos">€0.00</span>
+                    <span id="descuentos">0.00€</span>
                 </div>
                 <div class="summary-item">
                     <span>Total:</span>
-                    <span id="total">€0.00</span>
+                    <span id="total">0.00€</span>
                 </div>
             </div>
 
@@ -923,7 +923,7 @@
                     <div class="service-info">
                         <div class="service-name">${servicio.nombre}</div>
                         <div class="service-price">
-                            €${servicio.precio.toFixed(2)}
+                            ${servicio.precio.toFixed(2)}€
                             ${servicio.descuento > 0 ? `<span class="service-discount">-${servicio.descuento}%</span>` : ''}
                         </div>
                     </div>
@@ -986,10 +986,10 @@
                     return `
                         <tr>
                             <td>${item.nombre}</td>
-                            <td>€${item.precio.toFixed(2)}</td>
+                            <td>${item.precio.toFixed(2)}€</td>
                             <td>${item.cantidad}</td>
                             <td>${item.descuento > 0 ? item.descuento + '%' : 'No'}</td>
-                            <td>€${subtotal.toFixed(2)}</td>
+                            <td>${subtotal.toFixed(2)}€</td>
                             <td><button class="remove-btn" onclick="removeFromCart(${item.id})">Eliminar</button></td>
                         </tr>
                     `;
@@ -1019,9 +1019,9 @@
 
             const total = subtotal - totalDescuentos;
 
-            document.getElementById('subtotal').textContent = `€${subtotal.toFixed(2)}`;
-            document.getElementById('descuentos').textContent = `€${totalDescuentos.toFixed(2)}`;
-            document.getElementById('total').textContent = `€${total.toFixed(2)}`;
+            document.getElementById('subtotal').textContent = `${subtotal.toFixed(2)}€`;
+            document.getElementById('descuentos').textContent = `${totalDescuentos.toFixed(2)}€`;
+            document.getElementById('total').textContent = `${total.toFixed(2)}€`;
         }
 
         async function mostrarOfertas() {
@@ -1278,9 +1278,9 @@
                         const valores = [
                             item.nombre,
                             item.cantidad.toString(),
-                            formatEuroEnd(`€${item.precio.toFixed(2)}`),
+                            formatEuroEnd(`${item.precio.toFixed(2)}€`),
                             descuentoTexto,
-                            formatEuroEnd(`€${subtotal.toFixed(2)}`)
+                            formatEuroEnd(`${subtotal.toFixed(2)}€`)
                         ];
 
                         valores.forEach((valor, i) => {
@@ -1429,9 +1429,9 @@
                         const valores = [
                             item.nombre,
                             item.cantidad.toString(),
-                            formatEuroEnd(`€${item.precio.toFixed(2)}`),
+                            formatEuroEnd(`${item.precio.toFixed(2)}€`),
                             descuentoTexto,
-                            formatEuroEnd(`€${subtotal.toFixed(2)}`)
+                            formatEuroEnd(`${subtotal.toFixed(2)}€`)
                         ];
 
                         valores.forEach((valor, i) => {
