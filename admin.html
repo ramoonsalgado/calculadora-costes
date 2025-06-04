@@ -210,7 +210,7 @@
             margin-bottom: 1.5rem;
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden;
+            overflow: hidden; /* Ayuda a contener márgenes de tablas si es necesario */
         }
 
         .oferta-card::before {
@@ -308,12 +308,12 @@
         }
 
         .carrito-table {
-            width: 100%;
+            /* width: 100%; */ /* Eliminado para permitir que la tabla se ajuste a su contenido */
+            margin: 1rem auto; /* Centra la tabla horizontalmente y mantiene margen vertical */
             border-collapse: collapse;
-            margin: 1rem 0;
             background: #f8fafc;
             border-radius: 12px;
-            overflow: hidden;
+            overflow: hidden; /* Mantiene los bordes redondeados si la tabla tiene fondo */
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
@@ -426,6 +426,11 @@
 
             .action-buttons {
                 flex-direction: column;
+            }
+             .carrito-table { /* Ajuste para pantallas pequeñas si es necesario */
+                min-width: 0; /* Permite que la tabla se encoja más */
+                width: 100%; /* En pantallas pequeñas, puede ser mejor que ocupe el ancho */
+                margin: 1rem 0; /* Quitar el centrado auto en pantallas pequeñas si es 100% width */
             }
         }
 
@@ -618,10 +623,9 @@
                 return `${costeTotal.toFixed(2)}€`;
             }
             if (typeof costeTotal === 'string') {
-                // Remover el símbolo € si ya existe y luego añadirlo al final
                 return `${costeTotal.replace('€', '')}€`;
             }
-            return 'N/A€'; // Valor por defecto si no es ni número ni cadena
+            return 'N/A€'; 
         }
 
 
@@ -757,10 +761,7 @@
                 setTimeout(() => notification.remove(), 3000);
 
                 cargarOfertas(); 
-                // Si la oferta modificada estaba en los resultados de búsqueda, también actualizarlos
-                if (document.getElementById('resultadosBusqueda').innerHTML.trim() !== '') {
-                    buscarOfertas();
-                }
+                // Ya no se actualizan los resultados de búsqueda desde aquí
             } catch (error) {
                 alert("Error al cambiar el estado.");
                 console.error(error);
@@ -855,22 +856,11 @@
                         </div>
                         
                         ${carritoHTML}
-                        ${data.estado === "Pendiente" ? `
-                        <div class="action-buttons">
-                            <button id="aprobar-search-${id}" class="btn btn-success">
-                                ✅ Aprobar
-                            </button>
-                            <button id="rechazar-search-${id}" class="btn btn-danger">
-                                ❌ Rechazar
-                            </button>
-                        </div>` : ''}
+                         място para botones de acción eliminado de los resultados de búsqueda
                     `;
 
                     contenedor.appendChild(resultadoDiv);
-                     if(data.estado === "Pendiente") {
-                        document.getElementById(`aprobar-search-${id}`).addEventListener("click", () => cambiarEstado(id, "Aprobado"));
-                        document.getElementById(`rechazar-search-${id}`).addEventListener("click", () => cambiarEstado(id, "Rechazado"));
-                     }
+                    // Lógica de botones de acción eliminada de los resultados de búsqueda
                 });
             } catch (error) {
                 contenedor.innerHTML = `
