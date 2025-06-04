@@ -210,7 +210,8 @@
             margin-bottom: 1.5rem;
             transition: all 0.3s ease;
             position: relative;
-            overflow: hidden; /* Ayuda a contener márgenes de tablas si es necesario */
+            overflow: hidden;
+            /* Ayuda a contener márgenes de tablas si es necesario */
         }
 
         .oferta-card::before {
@@ -308,16 +309,23 @@
         }
 
         .carrito-table {
-            /* width: 100%; */ /* Eliminado para permitir que la tabla se ajuste a su contenido */
-            margin: 1rem auto; /* Centra la tabla horizontalmente y mantiene margen vertical */
+            /* width: 100%; */
+            /* Eliminado para permitir que la tabla se ajuste a su contenido */
+            margin: 1rem auto;
+            /* Centra la tabla horizontalmente y mantiene margen vertical */
             border-collapse: collapse;
             background: #f8fafc;
             border-radius: 12px;
-            overflow: hidden; /* Mantiene los bordes redondeados si la tabla tiene fondo */
+            overflow: hidden;
+            /* Mantiene los bordes redondeados si la tabla tiene fondo */
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .carrito-table th {
+            text-align: center;
+            /* Centra el texto horizontalmente */
+            vertical-align: middle;
+            /* Centra el texto verticalmente */
             background: linear-gradient(135deg, #1e293b, #334155);
             color: white;
             padding: 1rem;
@@ -329,6 +337,10 @@
         .carrito-table td {
             padding: 0.75rem 1rem;
             border-bottom: 1px solid #e5e7eb;
+            text-align: center;
+            /* Centra el texto horizontalmente */
+            vertical-align: middle;
+            /* Centra el texto verticalmente */
         }
 
         .carrito-table tr:hover {
@@ -427,10 +439,15 @@
             .action-buttons {
                 flex-direction: column;
             }
-             .carrito-table { /* Ajuste para pantallas pequeñas si es necesario */
-                min-width: 0; /* Permite que la tabla se encoja más */
-                width: 100%; /* En pantallas pequeñas, puede ser mejor que ocupe el ancho */
-                margin: 1rem 0; /* Quitar el centrado auto en pantallas pequeñas si es 100% width */
+
+            .carrito-table {
+                /* Ajuste para pantallas pequeñas si es necesario */
+                min-width: 0;
+                /* Permite que la tabla se encoja más */
+                width: 100%;
+                /* En pantallas pequeñas, puede ser mejor que ocupe el ancho */
+                margin: 1rem 0;
+                /* Quitar el centrado auto en pantallas pequeñas si es 100% width */
             }
         }
 
@@ -472,8 +489,10 @@
                         <h2>Ofertas Pendientes</h2>
                     </div>
                     <div>
-                        <label for="filtroTipoServicioPendientes" style="font-weight: 600; color: #334155; margin-right: 0.5rem;">Tipo de Servicio:</label>
-                        <select id="filtroTipoServicioPendientes" style="padding: 0.3rem 0.6rem; border-radius: 8px; border: 1.5px solid #ccc;">
+                        <label for="filtroTipoServicioPendientes"
+                            style="font-weight: 600; color: #334155; margin-right: 0.5rem;">Tipo de Servicio:</label>
+                        <select id="filtroTipoServicioPendientes"
+                            style="padding: 0.3rem 0.6rem; border-radius: 8px; border: 1.5px solid #ccc;">
                             <option value="">-- Todos --</option>
                             <option value="Desarrollo Web">Desarrollo Web</option>
                             <option value="Diseño Gráfico">Diseño Gráfico</option>
@@ -625,7 +644,7 @@
             if (typeof costeTotal === 'string') {
                 return `${costeTotal.replace('€', '')}€`;
             }
-            return 'N/A€'; 
+            return 'N/A€';
         }
 
 
@@ -760,7 +779,7 @@
                 document.body.appendChild(notification);
                 setTimeout(() => notification.remove(), 3000);
 
-                cargarOfertas(); 
+                cargarOfertas();
                 // Ya no se actualizan los resultados de búsqueda desde aquí
             } catch (error) {
                 alert("Error al cambiar el estado.");
