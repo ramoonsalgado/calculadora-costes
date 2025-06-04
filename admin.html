@@ -279,6 +279,10 @@
         .info-value {
             font-weight: 500;
             color: #1e293b;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+
         }
 
         .status-badge {
@@ -683,28 +687,28 @@
                             </div>
                             
                             <div class="info-grid">
-                                <div class="info-item">
-                                    <div class="info-label">Tipo de Servicio</div>
-                                    <div class="info-value">${data.tipoServicio}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Alcance</div>
-                                    <div class="info-value">${data.alcanceOpciones}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Coste Total</div>
-                                    <div class="coste-total">${costeTotalFormateado}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Fecha de Creación</div>
-                                    <div class="fecha-creacion">${fecha}</div>
-                                </div>
-                            </div>
-                            
-                            <div class="info-item" style="margin: 1rem 0;">
-                                <div class="info-label">Información Adicional</div>
-                                <div class="info-value">${data.informacionServicio}</div>
-                            </div>
+    <div class="info-item">
+        <div class="info-label">Tipo de Servicio</div>
+        <div class="info-value">${data.tipoServicio}</div>
+    </div>
+    <div class="info-item">
+        <div class="info-label">Alcance</div>
+        <div class="info-value">${data.alcanceOpciones}</div>
+    </div>
+    <div class="info-item">
+        <div class="info-label">Información Adicional</div>
+        <div class="info-value">${data.informacionServicio}</div>
+    </div>
+    <div class="info-item">
+        <div class="info-label">Coste Total</div>
+        <div class="coste-total">${costeTotalFormateado}</div>
+    </div>
+    <div class="info-item">
+        <div class="info-label">Fecha de Creación</div>
+        <div class="fecha-creacion">${fecha}</div>
+    </div>
+</div>
+
                             
                             ${carritoHTML}
                             
