@@ -1127,7 +1127,7 @@
                 img.src = imageUrl;
             });
         }
-  window.generatePDF = function () {
+window.generatePDF = function () {
     return new Promise((resolve, reject) => {
         const nombreCliente = document.getElementById('nombreCliente').value.trim();
         const nombreProyecto = document.getElementById('nombreProyecto').value.trim();
@@ -1234,36 +1234,41 @@
             doc.text(lines, 14, currentY);
             currentY += lines.length * 7 + 5;
 
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(16);
-            doc.setTextColor('#1e40af');
-            doc.text("Servicios contratados:", 14, currentY);
-            currentY += 10;
+            // Asegúrate de que el título "Servicios contratados" aparezca también en las nuevas páginas
+            const addServicesSection = () => {
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(16);
+                doc.setTextColor('#1e40af');
+                doc.text("Servicios contratados:", 14, currentY);
+                currentY += 10;
 
-            const startX = 14;
-            const columnWidths = [60, 25, 30, 30, 35];
-            const headers = ["Servicio", "Cantidad", "Precio (€)", "Descuento", "Subtotal (€)"];
+                const startX = 14;
+                const columnWidths = [60, 25, 30, 30, 35];
+                const headers = ["Servicio", "Cantidad", "Precio (€)", "Descuento", "Subtotal (€)"];
 
-            const headerHeight = 10;
-            doc.setFillColor(224, 235, 255);
-            doc.rect(startX, currentY - 7, columnWidths.reduce((a, b) => a + b, 0), headerHeight, 'F');
+                const headerHeight = 10;
+                doc.setFillColor(224, 235, 255);
+                doc.rect(startX, currentY - 7, columnWidths.reduce((a, b) => a + b, 0), headerHeight, 'F');
 
-            doc.setFont('helvetica', 'bold');
-            doc.setFontSize(12);
-            doc.setTextColor('#2563eb');
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(12);
+                doc.setTextColor('#2563eb');
 
-            let x = startX;
-            headers.forEach((header, i) => {
-                const posX = centerText(header, x, columnWidths[i], doc);
-                doc.text(header, posX, currentY);
-                x += columnWidths[i];
-            });
+                let x = startX;
+                headers.forEach((header, i) => {
+                    const posX = centerText(header, x, columnWidths[i], doc);
+                    doc.text(header, posX, currentY);
+                    x += columnWidths[i];
+                });
 
-            currentY += 10;
+                currentY += 10;
 
-            doc.setDrawColor(100);
-            doc.setLineWidth(0.5);
-            doc.line(startX, currentY - 7, startX + columnWidths.reduce((a, b) => a + b, 0), currentY - 7);
+                doc.setDrawColor(100);
+                doc.setLineWidth(0.5);
+                doc.line(startX, currentY - 7, startX + columnWidths.reduce((a, b) => a + b, 0), currentY - 7);
+            };
+
+            addServicesSection(); // Llamamos a la función para agregar la sección de servicios contratados
 
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(12);
@@ -1300,6 +1305,7 @@
                 if (currentY > doc.internal.pageSize.height - 20) {
                     doc.addPage();
                     currentY = 10; // Reiniciar la posición para la nueva página
+                    addServicesSection(); // Volver a añadir los encabezados
                     doc.setFont('helvetica', 'normal');
                     doc.setFontSize(12);
                     doc.setTextColor('#334155');
@@ -1335,7 +1341,6 @@
         });
     });
 };
-
 
         window.clearAll = function () {
             if (confirm('¿Estás seguro de que quieres limpiar todo?')) {
