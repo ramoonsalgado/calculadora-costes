@@ -467,10 +467,8 @@
                         <h2>Ofertas Pendientes</h2>
                     </div>
                     <div>
-                        <label for="filtroTipoServicioPendientes"
-                            style="font-weight: 600; color: #334155; margin-right: 0.5rem;">Tipo de Servicio:</label>
-                        <select id="filtroTipoServicioPendientes"
-                            style="padding: 0.3rem 0.6rem; border-radius: 8px; border: 1.5px solid #ccc;">
+                        <label for="filtroTipoServicioPendientes" style="font-weight: 600; color: #334155; margin-right: 0.5rem;">Tipo de Servicio:</label>
+                        <select id="filtroTipoServicioPendientes" style="padding: 0.3rem 0.6rem; border-radius: 8px; border: 1.5px solid #ccc;">
                             <option value="">-- Todos --</option>
                             <option value="Desarrollo Web">Desarrollo Web</option>
                             <option value="Diseño Gráfico">Diseño Gráfico</option>
@@ -555,7 +553,7 @@
         } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyAgFEpvwxe_P5w1JTmrF-IcZ0jWh2j76M4",
+            apiKey: "AIzaSyAgFEpvwxe_P5w1JTmrF-IcZ0jWh2j76M4", // Recuerda proteger tus claves API
             authDomain: "calculadoracostesfinal.firebaseapp.com",
             projectId: "calculadoracostesfinal",
             storageBucket: "calculadoracostesfinal.firebasestorage.app",
@@ -580,9 +578,9 @@
         function renderCarritoHTML(carrito) {
             if (!carrito || carrito.length === 0) {
                 return `<div class="empty-state">
-                    <div class="empty-state-icon">📦</div>
-                    <p>No hay servicios añadidos</p>
-                </div>`;
+                        <div class="empty-state-icon">📦</div>
+                        <p>No hay servicios añadidos</p>
+                    </div>`;
             }
 
             return `
@@ -603,10 +601,10 @@
                 return `
                                 <tr>
                                     <td><strong>${item.nombre}</strong></td>
-                                    <td>${item.precio.toFixed(2)} €</td>
+                                    <td>${item.precio.toFixed(2)}€</td>
                                     <td>${item.cantidad}</td>
                                     <td>${item.descuento > 0 ? item.descuento + '%' : 'Sin descuento'}</td>
-<td><strong>${subtotal.toFixed(2)} €</strong></td>
+                                    <td><strong>${subtotal.toFixed(2)}€</strong></td>
                                 </tr>
                             `;
             }).join('')}
@@ -614,6 +612,18 @@
                 </table>
             `;
         }
+
+        function formatCosteTotal(costeTotal) {
+            if (typeof costeTotal === 'number') {
+                return `${costeTotal.toFixed(2)}€`;
+            }
+            if (typeof costeTotal === 'string') {
+                // Remover el símbolo € si ya existe y luego añadirlo al final
+                return `${costeTotal.replace('€', '')}€`;
+            }
+            return 'N/A€'; // Valor por defecto si no es ni número ni cadena
+        }
+
 
         async function cargarOfertas() {
             const contenedorPendientes = document.getElementById("listaOfertasPendientes");
@@ -632,8 +642,9 @@
                     const fecha = data.creado?.toDate?.().toLocaleString() || 'Fecha no disponible';
                     const carritoHTML = renderCarritoHTML(data.carritoServicio);
                     const estadoHTML = getEstadoHTML(data.estado);
+                    const costeTotalFormateado = formatCosteTotal(data.costeTotal);
 
-                    // Aquí adaptamos la comparación para que use los valores exactos que cambiaste:
+
                     if (data.estado === "Pendiente" && (filtroTipo === "" || data.tipoServicio === filtroTipo)) {
                         pendientesCount++;
                         const ofertaDiv = document.createElement("div");
@@ -659,7 +670,7 @@
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">Coste Total</div>
-                                    <div class="coste-total">${data.costeTotal}</div>
+                                    <div class="coste-total">${costeTotalFormateado}</div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">Fecha de Creación</div>
@@ -726,26 +737,30 @@
 
                 const notification = document.createElement('div');
                 notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${nuevoEstado === 'Aprobado' ? '#10b981' : '#ef4444'};
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-        `;
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${nuevoEstado === 'Aprobado' ? '#10b981' : '#ef4444'};
+                    color: white;
+                    padding: 1rem 1.5rem;
+                    border-radius: 12px;
+                    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+                    z-index: 1000;
+                    animation: slideIn 0.3s ease;
+                `;
                 notification.innerHTML = `
-            <strong>${nuevoEstado === 'Aprobado' ? '✅' : '❌'} Oferta ${estadoTexto}</strong>
-            <p style="margin-top: 0.25rem; font-size: 0.9rem; opacity: 0.9;">El estado se ha actualizado correctamente</p>
-        `;
+                    <strong>${nuevoEstado === 'Aprobado' ? '✅' : '❌'} Oferta ${estadoTexto}</strong>
+                    <p style="margin-top: 0.25rem; font-size: 0.9rem; opacity: 0.9;">El estado se ha actualizado correctamente</p>
+                `;
 
                 document.body.appendChild(notification);
                 setTimeout(() => notification.remove(), 3000);
 
-                cargarOfertas();
+                cargarOfertas(); 
+                // Si la oferta modificada estaba en los resultados de búsqueda, también actualizarlos
+                if (document.getElementById('resultadosBusqueda').innerHTML.trim() !== '') {
+                    buscarOfertas();
+                }
             } catch (error) {
                 alert("Error al cambiar el estado.");
                 console.error(error);
@@ -801,6 +816,8 @@
                     const fecha = data.creado?.toDate?.().toLocaleString() || 'Fecha no disponible';
                     const carritoHTML = renderCarritoHTML(data.carritoServicio);
                     const estadoHTML = getEstadoHTML(data.estado);
+                    const costeTotalFormateado = formatCosteTotal(data.costeTotal);
+
 
                     const resultadoDiv = document.createElement('div');
                     resultadoDiv.className = 'oferta-card fade-in';
@@ -824,7 +841,7 @@
                             </div>
                             <div class="info-item">
                                 <div class="info-label">Coste Total</div>
-                                <div class="coste-total">${data.costeTotal}</div>
+                                <div class="coste-total">${costeTotalFormateado}</div>
                             </div>
                             <div class="info-item">
                                 <div class="info-label">Fecha de Creación</div>
@@ -838,9 +855,22 @@
                         </div>
                         
                         ${carritoHTML}
+                        ${data.estado === "Pendiente" ? `
+                        <div class="action-buttons">
+                            <button id="aprobar-search-${id}" class="btn btn-success">
+                                ✅ Aprobar
+                            </button>
+                            <button id="rechazar-search-${id}" class="btn btn-danger">
+                                ❌ Rechazar
+                            </button>
+                        </div>` : ''}
                     `;
 
                     contenedor.appendChild(resultadoDiv);
+                     if(data.estado === "Pendiente") {
+                        document.getElementById(`aprobar-search-${id}`).addEventListener("click", () => cambiarEstado(id, "Aprobado"));
+                        document.getElementById(`rechazar-search-${id}`).addEventListener("click", () => cambiarEstado(id, "Rechazado"));
+                     }
                 });
             } catch (error) {
                 contenedor.innerHTML = `
